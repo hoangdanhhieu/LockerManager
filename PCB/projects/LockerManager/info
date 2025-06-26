@@ -4,7 +4,7 @@
   "name": "LockerManager",
   "content": "",
   "created_at": "2025-06-26 09:08:39",
-  "updated_at": "2025-06-26 09:38:47",
+  "updated_at": "2025-06-26 10:24:11",
   "stick": "",
   "documents": [
     {
@@ -23,15 +23,15 @@
         "e49cf7af2bc9496883b7213307a599e6": 1,
         "966c8099c4c740cab36d8b3f345af475": 1,
         "0e1cde41e270479db10a7f15ab437b50": 1,
-        "56aa3a33311d4547a4c1d9ace4c0b407": 14,
+        "56aa3a33311d4547a4c1d9ace4c0b407": 6,
         "459a503e370da808278c308015c3d059": 1,
-        "332ba95fe1a94123b6434f1a899333f1": 49,
+        "332ba95fe1a94123b6434f1a899333f1": 1,
         "c741fef8a7e14a9a9e72770aa13f117c": 1,
         "ab25b3eaa1f54dddab5679a90dc5da10": 1,
         "7fc0f18b963c4053af89da628e074fec": 16,
         "ef6cd77a3d1441bdb057c843d062ca33": 16,
         "e897dd1359e440aba0df0f7ac8c4c2e2": 16,
-        "ec87ff6531ac492f80fb9b5c3868ec32": 3,
+        "ec87ff6531ac492f80fb9b5c3868ec32": 2,
         "09162f66eed24a88971cb204a5aceff8": 16,
         "c996990367134df4854174670f257897": 1,
         "d95e0bb2fa7a4084acdac905a03e0014": 16,
@@ -41,11 +41,12 @@
         "56a3ca81cf734e3a9293505bbf5a415d": 16,
         "1b0abb3f2d1c410dab7cd7675e06294c": 2,
         "5177103393a1b31098652f0fec5d2fb0": 2,
-        "34c60e2e106b4c4b83126f647e22f408": 45,
+        "34c60e2e106b4c4b83126f647e22f408": 111,
         "b2e90129a4a842db87677044e3a019e8": 16,
-        "226407a67b224c29b93189d379bbb4fd": 2,
         "aad50653aa9845c28a2dcfe00911ed56": 3,
-        "82c741b95f0947d5afe7a3658773d4a3": 3
+        "82c741b95f0947d5afe7a3658773d4a3": 3,
+        "a9b8e756aebe43a691619ea29aa85faf": 9,
+        "515b9b758b844fd1a3d419afad31fa2c": 2
       },
       "BOM": [
         [
@@ -201,9 +202,9 @@
         ],
         [
           "10kΩ",
-          44,
+          76,
           "R0603",
-          "R2,R5,R6,R7,R9,R10,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R30,R31,R32,R33,R34,R35,R36,R37,R45,R83,R84,R85,R86,R87,R88,R89,R90,R91,R92,R93,R94,R95,R96,R97",
+          "R2,R3,R4,R5,R6,R7,R8,R9,R10,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31,R32,R33,R34,R35,R36,R37,R38,R39,R40,R41,R42,R43,R44,R45,R46,R47,R48,R49,R50,R51,R52,R53,R54,R55,R56,R57,R58,R63,R66,R69,R70,R73,R76,R81,R83,R84,R85,R86,R87,R88,R89,R90,R91,R92,R93,R94,R95,R96,R97",
           {
             "Manufacturer Part": "SCR0603J2K2",
             "Manufacturer": "VO(翔胜)",
@@ -212,34 +213,10 @@
           }
         ],
         [
-          "10K",
-          32,
-          "R0805",
-          "R3,R4,R29,R38,R40,R41,R43,R44,R46,R47,R49,R50,R52,R53,R56,R57,R58,R59,R62,R63,R65,R66,R68,R69,R70,R71,R73,R74,R76,R77,R80,R81",
-          {
-            "Manufacturer Part": "SCR0805J2M",
-            "Manufacturer": "VO(翔胜)",
-            "Supplier": "LCSC",
-            "Supplier Part": "C3017921"
-          }
-        ],
-        [
-          "20K",
-          16,
-          "R0805",
-          "R8,R28,R39,R42,R48,R51,R54,R55,R60,R61,R64,R67,R72,R75,R78,R79",
-          {
-            "Manufacturer Part": "SCR0805J2M",
-            "Manufacturer": "VO(翔胜)",
-            "Supplier": "LCSC",
-            "Supplier Part": "C3017921"
-          }
-        ],
-        [
           "20kΩ",
-          2,
+          18,
           "R0603",
-          "R11,R12",
+          "R11,R12,R59,R60,R61,R62,R64,R65,R67,R68,R71,R72,R74,R75,R77,R78,R79,R80",
           {
             "Manufacturer Part": "SCR0603J10K",
             "Manufacturer": "VO(翔胜)",
@@ -269,6 +246,30 @@
             "Manufacturer": "VO(翔胜)",
             "Supplier": "LCSC",
             "Supplier Part": "C3017730"
+          }
+        ],
+        [
+          "22",
+          2,
+          "R0603",
+          "R98,R99",
+          {
+            "Manufacturer Part": "SCR0603J10K",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017715"
+          }
+        ],
+        [
+          "6.8K",
+          16,
+          "R0603",
+          "R100,R101,R102,R103,R104,R105,R106,R107,R108,R109,R110,R111,R112,R113,R114,R115",
+          {
+            "Manufacturer Part": "SCR0603J10K",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017715"
           }
         ],
         [
@@ -310,13 +311,13 @@
         [
           "22p",
           2,
-          "C0805",
+          "C0603",
           "U1,U15",
           {
-            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer Part": "C0603",
             "Manufacturer": "null",
             "Supplier": "LCSC",
-            "Supplier Part": "C9900009346"
+            "Supplier Part": "C9900029884"
           }
         ],
         [
@@ -441,14 +442,14 @@
         ],
         [
           "1uF",
-          6,
-          "C0805",
-          "U16,U17,U18,U19,U20,U39",
+          7,
+          "C0603",
+          "U16,U17,U18,U19,U20,U24,U77",
           {
-            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer Part": "C0603",
             "Manufacturer": "null",
             "Supplier": "LCSC",
-            "Supplier Part": "C9900009346"
+            "Supplier Part": "C9900029884"
           }
         ],
         [
@@ -464,22 +465,22 @@
           }
         ],
         [
-          "XD15EDGRC-3.81-6P-V",
+          "XD15EDGRC-3.81-4P-V",
           2,
-          "CONN-TH_6P-P3.81_XD15EDGRC-3.81-6P-V",
-          "U23,U78",
+          "CONN-TH_4P-P3.81_XD15EDGRC-3.81-4P-V",
+          "U23,U39",
           {
-            "Manufacturer Part": "XD15EDGRC-3.81-6P-V",
+            "Manufacturer Part": "XD15EDGRC-3.81-4P-V",
             "Manufacturer": "XUNDA(讯答)",
             "Supplier": "LCSC",
-            "Supplier Part": "C22365796"
+            "Supplier Part": "C22365794"
           }
         ],
         [
           "XD15EDGRC-3.81-2P-V",
-          3,
+          2,
           "CONN-TH_2P-P3.81_XD15EDGRC-3.81-2P-V",
-          "U24,U25,U37",
+          "U25,U37",
           {
             "Manufacturer Part": "XD15EDGRC-3.81-2P-V",
             "Manufacturer": "XUNDA(讯答)",
@@ -488,7 +489,7 @@
           }
         ],
         [
-          "LED_P_LOCK",
+          "P_LOCKER",
           1,
           "HDR-TH_3P-P2.54-V-M",
           "U26",
@@ -536,16 +537,16 @@
           }
         ]
       ],
-      "updateTime": 1750905527,
+      "updateTime": 1750908251,
       "createTime": 1750903720,
       "histories": [],
       "created_at": "2025-06-26 09:08:40",
-      "updated_at": "2025-06-26 09:38:47"
+      "updated_at": "2025-06-26 10:24:11"
     }
   ],
   "sort": [],
   "title": "LockerManager",
   "foldername": "LockerManager",
   "schfilename": "LockerManager.json",
-  "schfilemtime": 1750905527823
+  "schfilemtime": 1750908251483
 }
