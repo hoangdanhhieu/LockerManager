@@ -1,0 +1,551 @@
+{
+  "uuid": "b63af484cd2af51b567a97e496c3e882",
+  "path": "Offline/LockerManager",
+  "name": "LockerManager",
+  "content": "",
+  "created_at": "2025-06-26 09:08:39",
+  "updated_at": "2025-06-26 09:38:47",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "3b090552a9535190149c3c16549234cb",
+      "title": "schematic",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "1a22617947494ea7ac7d7cc41814a416": 1,
+        "99699f37fca745eab9f8e9938f1a0ebd": 2,
+        "58557ab5dac544259249b4981dd6020c": 1,
+        "4945783e8b1e483e808f512115b1847f": 3,
+        "dfbb173caec748379d6991cf7d79e333": 1,
+        "e49cf7af2bc9496883b7213307a599e6": 1,
+        "966c8099c4c740cab36d8b3f345af475": 1,
+        "0e1cde41e270479db10a7f15ab437b50": 1,
+        "56aa3a33311d4547a4c1d9ace4c0b407": 14,
+        "459a503e370da808278c308015c3d059": 1,
+        "332ba95fe1a94123b6434f1a899333f1": 49,
+        "c741fef8a7e14a9a9e72770aa13f117c": 1,
+        "ab25b3eaa1f54dddab5679a90dc5da10": 1,
+        "7fc0f18b963c4053af89da628e074fec": 16,
+        "ef6cd77a3d1441bdb057c843d062ca33": 16,
+        "e897dd1359e440aba0df0f7ac8c4c2e2": 16,
+        "ec87ff6531ac492f80fb9b5c3868ec32": 3,
+        "09162f66eed24a88971cb204a5aceff8": 16,
+        "c996990367134df4854174670f257897": 1,
+        "d95e0bb2fa7a4084acdac905a03e0014": 16,
+        "d5c66766b4ed44b5a042f2d9f9f9cade": 1,
+        "0a7b3559b42e4308aa4c2afb276d8437": 1,
+        "20e710bec0ea45a482ae3751a979055e": 1,
+        "56a3ca81cf734e3a9293505bbf5a415d": 16,
+        "1b0abb3f2d1c410dab7cd7675e06294c": 2,
+        "5177103393a1b31098652f0fec5d2fb0": 2,
+        "34c60e2e106b4c4b83126f647e22f408": 45,
+        "b2e90129a4a842db87677044e3a019e8": 16,
+        "226407a67b224c29b93189d379bbb4fd": 2,
+        "aad50653aa9845c28a2dcfe00911ed56": 3,
+        "82c741b95f0947d5afe7a3658773d4a3": 3
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "1N5824",
+          1,
+          "SMA_L4.3-W2.7-LS5.0-RD",
+          "D1",
+          {
+            "Manufacturer Part": "1N5824-DO-214ACSMA",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C2916000"
+          }
+        ],
+        [
+          "ZMM15V",
+          16,
+          "LL-34_L3.5-W1.5-RD-2",
+          "D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14,D15,D16,D17",
+          {
+            "Manufacturer Part": "ZMM15V",
+            "Manufacturer": "YONGYUTAI(永裕泰)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C2891755"
+          }
+        ],
+        [
+          "SMAJ6.5CA",
+          2,
+          "SMA_L4.4-W2.6-LS5.0-BI",
+          "D18,D19",
+          {
+            "Manufacturer Part": "SMAJ6.5CA",
+            "Manufacturer": "RUILON(瑞隆源)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C10754"
+          }
+        ],
+        [
+          "JK-MSMD075",
+          2,
+          "F1812",
+          "F1,F2",
+          {
+            "Manufacturer Part": "JK-MSMD075",
+            "Manufacturer": "JK(金科)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C561588"
+          }
+        ],
+        [
+          "SWD",
+          1,
+          "HDR-TH_4P-P2.54-V-M",
+          "H1",
+          {
+            "Manufacturer Part": "B-2100S04P-A110",
+            "Manufacturer": "Ckmtw(灿科盟)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C124378"
+          }
+        ],
+        [
+          "Header-Male-2.54_1x2",
+          1,
+          "HDR-TH_2P-P2.54-V-M-1",
+          "H2",
+          {
+            "Manufacturer Part": "826629-2",
+            "Manufacturer": "TE Connectivity(泰科电子)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C86471"
+          }
+        ],
+        [
+          "33uH",
+          1,
+          "IND-SMD_L12.0-W12.0_CDRH127NP",
+          "L1",
+          {
+            "Manufacturer Part": "CDRH127NP-330MC",
+            "Manufacturer": "Sumida(胜美达)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C167264"
+          }
+        ],
+        [
+          "LED0805",
+          3,
+          "LED0805-RD",
+          "LED1,LED2,LED3",
+          {
+            "Manufacturer Part": "led0805",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900012722"
+          }
+        ],
+        [
+          "YLED0603B",
+          16,
+          "LED0603-FD",
+          "LED4,LED5,LED6,LED7,LED8,LED9,LED10,LED11,LED12,LED13,LED14,LED15,LED16,LED17,LED18,LED19",
+          {
+            "Manufacturer Part": "YLED0603B",
+            "Manufacturer": "YONGYUTAI(永裕泰)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C19171394"
+          }
+        ],
+        [
+          "FDD8870",
+          16,
+          "TO-252-2_L6.6-W6.1-P4.57-LS9.9-BR-CW",
+          "Q1,Q3,Q5,Q7,Q10,Q12,Q14,Q15,Q18,Q19,Q21,Q23,Q26,Q28,Q30,Q31",
+          {
+            "Manufacturer Part": "FDD8870",
+            "Manufacturer": "onsemi(安森美)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C10868"
+          }
+        ],
+        [
+          "2SC1815",
+          16,
+          "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
+          "Q2,Q4,Q6,Q8,Q9,Q11,Q13,Q16,Q17,Q20,Q22,Q24,Q25,Q27,Q29,Q32",
+          {
+            "Manufacturer Part": "2SC1815",
+            "Manufacturer": "GOODWORK(固得沃克)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C909752"
+          }
+        ],
+        [
+          "5kΩ",
+          1,
+          "R0603",
+          "R1",
+          {
+            "Manufacturer Part": "SCR0603J2K2",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017730"
+          }
+        ],
+        [
+          "10kΩ",
+          44,
+          "R0603",
+          "R2,R5,R6,R7,R9,R10,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R30,R31,R32,R33,R34,R35,R36,R37,R45,R83,R84,R85,R86,R87,R88,R89,R90,R91,R92,R93,R94,R95,R96,R97",
+          {
+            "Manufacturer Part": "SCR0603J2K2",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017730"
+          }
+        ],
+        [
+          "10K",
+          32,
+          "R0805",
+          "R3,R4,R29,R38,R40,R41,R43,R44,R46,R47,R49,R50,R52,R53,R56,R57,R58,R59,R62,R63,R65,R66,R68,R69,R70,R71,R73,R74,R76,R77,R80,R81",
+          {
+            "Manufacturer Part": "SCR0805J2M",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017921"
+          }
+        ],
+        [
+          "20K",
+          16,
+          "R0805",
+          "R8,R28,R39,R42,R48,R51,R54,R55,R60,R61,R64,R67,R72,R75,R78,R79",
+          {
+            "Manufacturer Part": "SCR0805J2M",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017921"
+          }
+        ],
+        [
+          "20kΩ",
+          2,
+          "R0603",
+          "R11,R12",
+          {
+            "Manufacturer Part": "SCR0603J10K",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017715"
+          }
+        ],
+        [
+          "120",
+          1,
+          "R0805",
+          "R13",
+          {
+            "Manufacturer Part": "SCR0805J2M",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017921"
+          }
+        ],
+        [
+          "2.2kΩ",
+          1,
+          "R0603",
+          "R82",
+          {
+            "Manufacturer Part": "SCR0603J2K2",
+            "Manufacturer": "VO(翔胜)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3017730"
+          }
+        ],
+        [
+          "Reset",
+          1,
+          "SW-SMD_4P-L6.0-W6.0-P4.50-LS8.5",
+          "SW1",
+          {
+            "Manufacturer Part": "Switch6*6*11",
+            "Manufacturer": "BBJ",
+            "Supplier": "LCSC",
+            "Supplier Part": "C91998"
+          }
+        ],
+        [
+          "DSWB05LHGET",
+          1,
+          "SW-TH_DSWB05LHGET",
+          "SW2",
+          {
+            "Manufacturer Part": "DSWB05LHGET",
+            "Manufacturer": "YE",
+            "Supplier": "LCSC",
+            "Supplier Part": "C126889"
+          }
+        ],
+        [
+          "EN_ALL",
+          1,
+          "SW-SMD_4P-L6.0-W6.0-P4.50-LS8.5",
+          "SW3",
+          {
+            "Manufacturer Part": "Switch6*6*11",
+            "Manufacturer": "BBJ",
+            "Supplier": "LCSC",
+            "Supplier Part": "C91998"
+          }
+        ],
+        [
+          "22p",
+          2,
+          "C0805",
+          "U1,U15",
+          {
+            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900009346"
+          }
+        ],
+        [
+          "901200124",
+          1,
+          "HDR-TH_4P-P2.54-V-M-1",
+          "U2",
+          {
+            "Manufacturer Part": "901200124",
+            "Manufacturer": "MOLEX",
+            "Supplier": "LCSC",
+            "Supplier Part": "C7545798"
+          }
+        ],
+        [
+          "AMS1117-3.3/TR",
+          1,
+          "SOT-223_L6.5-W3.5-P2.30-LS7.0-BR",
+          "U3",
+          {
+            "Manufacturer Part": "AMS1117-3.3/TR",
+            "Manufacturer": "HGSEMI(华冠)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C22461603"
+          }
+        ],
+        [
+          "220uF",
+          3,
+          "CAP-SMD_BD8.0-L8.3-W8.3-LS9.1-FD",
+          "U4,U5,U76",
+          {
+            "Manufacturer Part": "VT220UF35V167RV0130",
+            "Manufacturer": "KNSCHA(科尼盛)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C5246582"
+          }
+        ],
+        [
+          "LM2596SX-5.0/NOPB-YJLTY",
+          1,
+          "TO-263-5_L10.0-W8.4-P1.70-LS15.3-BR",
+          "U6",
+          {
+            "Manufacturer Part": "LM2596SX-5.0/NOPB-YJLTY",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900002281"
+          }
+        ],
+        [
+          "MAX485EESA+T(ES)",
+          1,
+          "SOP-8_L4.9-W3.9-P1.27-LS6.0-BL",
+          "U7",
+          {
+            "Manufacturer Part": "MAX485EESA+T(ES)",
+            "Manufacturer": "ElecSuper(静芯微)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C41438291"
+          }
+        ],
+        [
+          "M7 1N4007",
+          16,
+          "SMA_L4.4-W2.8-LS5.4-RD",
+          "U8,U30,U33,U36,U40,U43,U46,U51,U52,U57,U60,U63,U64,U67,U70,U75",
+          {
+            "Manufacturer Part": "M7 1N4007",
+            "Manufacturer": "JUXING(钜兴)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C5337558"
+          }
+        ],
+        [
+          "XH2.54-4",
+          16,
+          "CONN-TH_XH2.54-4",
+          "U9,U29,U32,U35,U41,U44,U47,U50,U53,U56,U59,U62,U65,U68,U71,U74",
+          {
+            "Manufacturer Part": "XH2.54-4",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900012082"
+          }
+        ],
+        [
+          "104",
+          2,
+          "C0805",
+          "U10,U12",
+          {
+            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900009346"
+          }
+        ],
+        [
+          "106",
+          2,
+          "C0805",
+          "U11,U13",
+          {
+            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900009346"
+          }
+        ],
+        [
+          "STM32F103RCT6",
+          1,
+          "LQFP-64_L10.0-W10.0-P0.50-LS12.0-BL",
+          "U14",
+          {
+            "Manufacturer Part": "STM32F103RCT6",
+            "Manufacturer": "ST(意法半导体)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C8323"
+          }
+        ],
+        [
+          "1uF",
+          6,
+          "C0805",
+          "U16,U17,U18,U19,U20,U39",
+          {
+            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900009346"
+          }
+        ],
+        [
+          "0.1uF",
+          2,
+          "C0805",
+          "U21,U22",
+          {
+            "Manufacturer Part": "CAP-C0805",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900009346"
+          }
+        ],
+        [
+          "XD15EDGRC-3.81-6P-V",
+          2,
+          "CONN-TH_6P-P3.81_XD15EDGRC-3.81-6P-V",
+          "U23,U78",
+          {
+            "Manufacturer Part": "XD15EDGRC-3.81-6P-V",
+            "Manufacturer": "XUNDA(讯答)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C22365796"
+          }
+        ],
+        [
+          "XD15EDGRC-3.81-2P-V",
+          3,
+          "CONN-TH_2P-P3.81_XD15EDGRC-3.81-2P-V",
+          "U24,U25,U37",
+          {
+            "Manufacturer Part": "XD15EDGRC-3.81-2P-V",
+            "Manufacturer": "XUNDA(讯答)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C22365792"
+          }
+        ],
+        [
+          "LED_P_LOCK",
+          1,
+          "HDR-TH_3P-P2.54-V-M",
+          "U26",
+          {
+            "Manufacturer Part": "5-146277-3",
+            "Manufacturer": "TE Connectivity(泰科电子)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3327863"
+          }
+        ],
+        [
+          "XH2.54-2PIN-直针",
+          16,
+          "CONN-TH_XH2.54-2P",
+          "U27,U28,U31,U34,U42,U45,U48,U49,U54,U55,U58,U61,U66,U69,U72,U73",
+          {
+            "Manufacturer Part": "XH2.54-2PIN-直针",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900011425"
+          }
+        ],
+        [
+          "5A/125V",
+          1,
+          "FUSE-SMD_L6.1-W2.5",
+          "U38",
+          {
+            "Manufacturer Part": "5A/125V",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C9900024401"
+          }
+        ],
+        [
+          "8MHz",
+          1,
+          "HC-49S_L11.5-W4.8",
+          "X1",
+          {
+            "Manufacturer Part": "49SAT08000122080",
+            "Manufacturer": "JGHC(晶光华)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C479151"
+          }
+        ]
+      ],
+      "updateTime": 1750905527,
+      "createTime": 1750903720,
+      "histories": [],
+      "created_at": "2025-06-26 09:08:40",
+      "updated_at": "2025-06-26 09:38:47"
+    }
+  ],
+  "sort": [],
+  "title": "LockerManager",
+  "foldername": "LockerManager",
+  "schfilename": "LockerManager.json",
+  "schfilemtime": 1750905527823
+}
