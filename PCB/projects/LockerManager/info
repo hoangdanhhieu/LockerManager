@@ -4,7 +4,7 @@
   "name": "LockerManager",
   "content": "",
   "created_at": "2025-06-26 09:08:39",
-  "updated_at": "2025-06-26 13:56:03",
+  "updated_at": "2025-06-26 14:01:31",
   "stick": "",
   "documents": [
     {
@@ -456,7 +456,7 @@
           "XD15EDGRC-3.81-4P-V",
           2,
           "CONN-TH_4P-P3.81_XD15EDGRC-3.81-4P-V",
-          "U23,U39",
+          "U23,U24",
           {
             "Manufacturer Part": "XD15EDGRC-3.81-4P-V",
             "Manufacturer": "XUNDA(讯答)",
@@ -474,18 +474,6 @@
             "Manufacturer": "XUNDA(讯答)",
             "Supplier": "LCSC",
             "Supplier Part": "C22365792"
-          }
-        ],
-        [
-          "P_LOCKER",
-          1,
-          "HDR-TH_3P-P2.54-V-M",
-          "U26",
-          {
-            "Manufacturer Part": "5-146277-3",
-            "Manufacturer": "TE Connectivity(泰科电子)",
-            "Supplier": "LCSC",
-            "Supplier Part": "C3327863"
           }
         ],
         [
@@ -513,6 +501,18 @@
           }
         ],
         [
+          "P_LOCKER",
+          1,
+          "HDR-TH_3P-P2.54-V-M",
+          "U77",
+          {
+            "Manufacturer Part": "5-146277-3",
+            "Manufacturer": "TE Connectivity(泰科电子)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3327863"
+          }
+        ],
+        [
           "8MHz",
           1,
           "HC-49S_L11.5-W4.8",
@@ -525,16 +525,16 @@
           }
         ]
       ],
-      "updateTime": 1750920963,
+      "updateTime": 1750921291,
       "createTime": 1750903720,
       "histories": [],
       "created_at": "2025-06-26 09:08:40",
-      "updated_at": "2025-06-26 13:56:03"
+      "updated_at": "2025-06-26 14:01:31"
     }
   ],
   "sort": [],
   "title": "LockerManager",
   "foldername": "LockerManager",
   "schfilename": "LockerManager.json",
-  "schfilemtime": 1750920963810
+  "schfilemtime": 1750921291848
 }
