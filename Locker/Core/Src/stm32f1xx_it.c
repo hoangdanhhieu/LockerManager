@@ -22,6 +22,8 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "string.h"
+#include "command_rev.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +53,6 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -213,5 +214,41 @@ void USART1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
+	HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buff, 30);
+	if (Size < 6)
+		return;
+	if (rx_buff[0] == HEADER && rx_buff[1] == TYPE_CODE && rx_buff[4] + 6 == Size) {
+		uint8_t xor = checksum(rx_buff, Size - 1);
+		if (xor != rx_buff[Size - 1]) {
+			return;
+		}
+		if (rx_buff[2] == BROADCAST_ADDRESS && rx_buff[3] == BOARDCAST_CODE && rx_buff[4] == 0) {
+			func_code = 1;
+			return;
+		} else if(rx_buff[2] != ADDRESS) { return; }
+		if(rx_buff[3] == READ_MCU_ID_CODE && rx_buff[4] == 0) {
+			func_code = 2;
+		} else if(rx_buff[3] == READ_CONFIG_CODE && rx_buff[4] == 0){
+			func_code = 3;
+		} else if(rx_buff[3] == WRITE_CONFIG_CODE && rx_buff[4] == 5){
+			func_code = 4;
+		} else if(rx_buff[3] == READ_CHANNEL_STATUS_CODE && rx_buff[4] == 1 && rx_buff[5] <= MAX_CHANNEL){
+			func_code = 5;
+		} else if(rx_buff[3] == WRITE_CHANNEL_CODE && rx_buff[4] == 2){
+			func_code = 6;
+		} else if(rx_buff[3] == READ_CHANNEL_SIGNAL_STATUS_CODE && rx_buff[4] == 1){
+			func_code = 7;
+		} else if(rx_buff[3] == UNLOCK_CODE && rx_buff[4] == 1){
+			func_code = 8;
+		} else if(rx_buff[3] == RUSC1_CODE && rx_buff[4] == 3){
+			func_code = 9;
+		} else if(rx_buff[3] == RUSC2_CODE && rx_buff[4] == 3){
+			func_code = 10;
+		} else if(rx_buff[3] == RUSC3_CODE && rx_buff[4] == 3){
+			func_code = 11;
+		}
+	}
+}
 
 /* USER CODE END 1 */
