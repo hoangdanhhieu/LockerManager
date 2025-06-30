@@ -371,6 +371,14 @@ void writePin(uint8_t PIN, uint8_t value) {
 	}
 }
 
+void readAddress(){
+	uint8_t D1 = 1 - HAL_GPIO_ReadPin(GPIOC, D1_Pin);
+	uint8_t D2 = 1 - HAL_GPIO_ReadPin(GPIOC, D2_Pin);
+	uint8_t D3 = 1 - HAL_GPIO_ReadPin(GPIOC, D3_Pin);
+	uint8_t D4 = 1 - HAL_GPIO_ReadPin(GPIOA, D4_Pin);
+	uint8_t D5 = 1 - HAL_GPIO_ReadPin(GPIOA, D5_Pin);
+	ADDRESS = 1 + ((D1 << 0) | (D2 << 1) | (D3 << 2) | (D4 << 3) | (D5 << 4));
+}
 
 /*
 void flash_init() {

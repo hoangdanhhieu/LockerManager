@@ -21,3 +21,4 @@ void unlock_all();
 void rusc1_func();
 void rusc2_func();
 void rusc3_func();
+void readAddress();
