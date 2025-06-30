@@ -5,7 +5,6 @@
  *      Author: nonamezz
  */
 
-
 #include "locker_func.h"
 #include "main.h"
 #include "command_rev.h"
@@ -137,7 +136,7 @@ void readChannelSignalStatus_func() {
 	}
 }
 
-void unlock_func(){
+void unlock_func() {
 	tx_buff[0] = HEADER;
 	tx_buff[1] = TYPE_CODE;
 	tx_buff[2] = ADDRESS;
@@ -146,21 +145,21 @@ void unlock_func(){
 	tx_buff[5] = rx_buff[5];
 	rx_buff[6] = 0x01;
 	tx_buff[7] = checksum(tx_buff, 7);
-	if(rx_buff[5] == 0){
-		for(uint8_t i = 1; i <= MAX_CHANNEL; i++){
+	if (rx_buff[5] == 0) {
+		for (uint8_t i = 1; i <= MAX_CHANNEL; i++) {
 			writePin(i, 1);
-			HAL_Delay((uint32_t)UNLOCK_TIME * 10);
+			HAL_Delay((uint32_t) UNLOCK_TIME * 10);
 			writePin(i, 0);
 		}
 	} else {
 		writePin(rx_buff[5], 1);
-		HAL_Delay((uint32_t)UNLOCK_TIME * 10);
+		HAL_Delay((uint32_t) UNLOCK_TIME * 10);
 		writePin(rx_buff[5], 0);
 	}
 	send_data(tx_buff, 8);
 }
 
-void rusc1_func(){
+void rusc1_func() {
 	tx_buff[0] = HEADER;
 	tx_buff[1] = TYPE_CODE;
 	tx_buff[2] = ADDRESS;
@@ -171,12 +170,12 @@ void rusc1_func(){
 	uint32_t overtime = rx_buff[6] * 100;
 	uint8_t last_status = readPin(rx_buff[5]);
 	writePin(rx_buff[5], 1);
-	while(1){
+	while (1) {
 		uint8_t status = readPin(rx_buff[5]);
-		if(HAL_GetTick() - start_time > overtime){
+		if (HAL_GetTick() - start_time > overtime) {
 			tx_buff[6] = 0x03;
 			break;
-		} else if(last_status != status && status == rx_buff[7]){
+		} else if (last_status != status && status == rx_buff[7]) {
 			tx_buff[6] = 0x01;
 			break;
 		} else {
@@ -188,7 +187,7 @@ void rusc1_func(){
 	send_data(tx_buff, 8);
 }
 
-void rusc2_func(){
+void rusc2_func() {
 	tx_buff[0] = HEADER;
 	tx_buff[1] = TYPE_CODE;
 	tx_buff[2] = ADDRESS;
@@ -200,18 +199,18 @@ void rusc2_func(){
 	uint8_t last_status = readPin(rx_buff[5]);
 	uint8_t count_changes = 0;
 	writePin(rx_buff[5], 1);
-	while(1){
+	while (1) {
 		uint8_t status = readPin(rx_buff[5]);
-		if(HAL_GetTick() - start_time > overtime){
+		if (HAL_GetTick() - start_time > overtime) {
 			tx_buff[6] = 0x03;
 			break;
-		} else if(count_changes >= rx_buff[7]){
+		} else if (count_changes >= rx_buff[7]) {
 			tx_buff[6] = 0x01;
 			break;
 		} else {
-			if(last_status != status){
+			if (last_status != status) {
 				last_status = status;
-				count_changes+=1;
+				count_changes += 1;
 			}
 		}
 	}
@@ -220,7 +219,7 @@ void rusc2_func(){
 	send_data(tx_buff, 8);
 }
 
-void rusc3_func(){
+void rusc3_func() {
 	tx_buff[0] = HEADER;
 	tx_buff[1] = TYPE_CODE;
 	tx_buff[2] = ADDRESS;
@@ -230,11 +229,11 @@ void rusc3_func(){
 	uint32_t start_time = HAL_GetTick();
 	uint32_t overtime = rx_buff[6] * 100;
 	writePin(rx_buff[5], 1);
-	while(1){
-		if(HAL_GetTick() - start_time > overtime){
+	while (1) {
+		if (HAL_GetTick() - start_time > overtime) {
 			tx_buff[6] = 0x03;
 			break;
-		} else if(rx_buff[7] == readPin(rx_buff[5])){
+		} else if (rx_buff[7] == readPin(rx_buff[5])) {
 			tx_buff[6] = 0x01;
 			break;
 		}
@@ -244,10 +243,10 @@ void rusc3_func(){
 	send_data(tx_buff, 8);
 }
 
-void unlock_all(){
-	for(int i = 1; i <= MAX_CHANNEL; i++){
+void unlock_all() {
+	for (int i = 1; i <= MAX_CHANNEL; i++) {
 		writePin(i, 1);
-		HAL_Delay((uint32_t)UNLOCK_TIME * 10);
+		HAL_Delay((uint32_t) UNLOCK_TIME * 10);
 		writePin(i, 0);
 	}
 }
@@ -371,7 +370,7 @@ void writePin(uint8_t PIN, uint8_t value) {
 	}
 }
 
-void readAddress(){
+void readAddress() {
 	uint8_t D1 = 1 - HAL_GPIO_ReadPin(GPIOC, D1_Pin);
 	uint8_t D2 = 1 - HAL_GPIO_ReadPin(GPIOC, D2_Pin);
 	uint8_t D3 = 1 - HAL_GPIO_ReadPin(GPIOC, D3_Pin);
@@ -381,11 +380,11 @@ void readAddress(){
 }
 
 /*
-void flash_init() {
-	HAL_FLASH_Unlock(); //unlock the flash
-	FlashErase.Sector = FLASH_SECTOR_11;
-	FlashErase.NbSectors = 1;
-	FlashErase.TypeErase = FLASH_TYPEERASE_SECTORS;
-	FlashErase.VoltageRange = VOLTAGE_RANGE_3;
-	HAL_FLASH_Lock();
-}*/
+ void flash_init() {
+ HAL_FLASH_Unlock(); //unlock the flash
+ FlashErase.Sector = FLASH_SECTOR_11;
+ FlashErase.NbSectors = 1;
+ FlashErase.TypeErase = FLASH_TYPEERASE_SECTORS;
+ FlashErase.VoltageRange = VOLTAGE_RANGE_3;
+ HAL_FLASH_Lock();
+ }*/
