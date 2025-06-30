@@ -4,7 +4,7 @@
   "name": "LockerManager",
   "content": "",
   "created_at": "2025-06-26 09:08:39",
-  "updated_at": "2025-06-30 11:17:09",
+  "updated_at": "2025-06-30 14:02:50",
   "stick": "",
   "documents": [
     {
@@ -285,18 +285,6 @@
           }
         ],
         [
-          "Button-SMD-6×6×5mm",
-          2,
-          "SW-SMD_4P-L6.0-W6.0-P4.50-LS8.2",
-          "SW1,SW4",
-          {
-            "Manufacturer Part": "6×6×5mm 环保（嘉立创）",
-            "Manufacturer": "null",
-            "Supplier": "LCSC",
-            "Supplier Part": "C21456"
-          }
-        ],
-        [
           "DSWB05LHGET",
           1,
           "SW-TH_DSWB05LHGET",
@@ -489,6 +477,18 @@
           }
         ],
         [
+          "Button-SMD-6×6×5mm",
+          2,
+          "SW-SMD_4P-L6.0-W6.0-P4.50-LS8.2",
+          "U26,U79",
+          {
+            "Manufacturer Part": "6×6×5mm 环保（嘉立创）",
+            "Manufacturer": "null",
+            "Supplier": "LCSC",
+            "Supplier Part": "C21456"
+          }
+        ],
+        [
           "XH2.54-2PIN-直针",
           16,
           "CONN-TH_XH2.54-2P",
@@ -537,16 +537,16 @@
           }
         ]
       ],
-      "updateTime": 1751257029,
+      "updateTime": 1751266970,
       "createTime": 1750903720,
       "histories": [],
       "created_at": "2025-06-26 09:08:40",
-      "updated_at": "2025-06-30 11:17:09"
+      "updated_at": "2025-06-30 14:02:50"
     }
   ],
   "sort": [],
   "title": "LockerManager",
   "foldername": "LockerManager",
   "schfilename": "LockerManager.json",
-  "schfilemtime": 1751257029834
+  "schfilemtime": 1751266970370
 }
