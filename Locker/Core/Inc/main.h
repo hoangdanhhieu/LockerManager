@@ -37,7 +37,6 @@ void send_data(uint8_t *data, uint8_t size);
 uint8_t checksum(uint8_t* data, uint8_t size);
 extern UART_HandleTypeDef huart1;
 extern uint8_t func_code;
-void MX_USART1_UART_Init(void);
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

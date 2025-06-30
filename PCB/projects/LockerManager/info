@@ -4,7 +4,7 @@
   "name": "LockerManager",
   "content": "",
   "created_at": "2025-06-26 09:08:39",
-  "updated_at": "2025-06-29 17:26:11",
+  "updated_at": "2025-06-30 11:17:09",
   "stick": "",
   "documents": [
     {
@@ -189,7 +189,7 @@
           }
         ],
         [
-          "5kΩ",
+          "2.2K",
           1,
           "R0603",
           "R1",
@@ -202,9 +202,9 @@
         ],
         [
           "10kΩ",
-          75,
+          61,
           "R0603",
-          "R2,R4,R5,R6,R7,R8,R9,R10,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R28,R30,R31,R32,R33,R34,R35,R38,R39,R41,R42,R44,R45,R46,R48,R49,R51,R52,R54,R55,R57,R58,R60,R61,R63,R64,R66,R67,R69,R71,R72,R73,R75,R78,R79,R83,R84,R85,R86,R87,R88,R89,R90,R91,R92,R93,R94,R95,R96,R111,R113,R114,R115",
+          "R2,R4,R5,R6,R7,R8,R9,R10,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R28,R30,R31,R32,R33,R34,R35,R38,R39,R41,R42,R44,R45,R46,R48,R49,R51,R52,R54,R55,R57,R58,R60,R61,R63,R64,R66,R67,R69,R71,R72,R73,R75,R78,R79,R92,R111,R113,R115",
           {
             "Manufacturer Part": "SCR0603J2K2",
             "Manufacturer": "VO(翔胜)",
@@ -250,9 +250,9 @@
         ],
         [
           "5.1K",
-          1,
+          15,
           "R0603",
-          "R37",
+          "R37,R83,R84,R85,R86,R87,R88,R89,R90,R91,R93,R94,R95,R96,R114",
           {
             "Manufacturer Part": "SCR0603J10K",
             "Manufacturer": "VO(翔胜)",
@@ -537,16 +537,16 @@
           }
         ]
       ],
-      "updateTime": 1751192771,
+      "updateTime": 1751257029,
       "createTime": 1750903720,
       "histories": [],
       "created_at": "2025-06-26 09:08:40",
-      "updated_at": "2025-06-29 17:26:11"
+      "updated_at": "2025-06-30 11:17:09"
     }
   ],
   "sort": [],
   "title": "LockerManager",
   "foldername": "LockerManager",
   "schfilename": "LockerManager.json",
-  "schfilemtime": 1751192771942
+  "schfilemtime": 1751257029834
 }

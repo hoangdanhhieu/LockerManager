@@ -51,7 +51,7 @@ UART_HandleTypeDef huart1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-void MX_USART1_UART_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -203,7 +203,7 @@ void SystemClock_Config(void) {
  * @param None
  * @retval None
  */
-void MX_USART1_UART_Init(void) {
+static void MX_USART1_UART_Init(void) {
 
 	/* USER CODE BEGIN USART1_Init 0 */
 
@@ -213,7 +213,7 @@ void MX_USART1_UART_Init(void) {
 
 	/* USER CODE END USART1_Init 1 */
 	huart1.Instance = USART1;
-	huart1.Init.BaudRate = 9600;
+	huart1.Init.BaudRate = BAUD_RATE;
 	huart1.Init.WordLength = UART_WORDLENGTH_8B;
 	huart1.Init.StopBits = UART_STOPBITS_1;
 	huart1.Init.Parity = UART_PARITY_NONE;

@@ -82,9 +82,17 @@ void writeConfig_func() {
 			| ((uint32_t) rx_buff[7] << 8) | ((uint32_t) rx_buff[8] << 0);
 	UNLOCK_TIME = rx_buff[9];
 	readConfig_func();
+	HAL_UART_Abort_IT(&huart1);
 	HAL_UART_DeInit(&huart1);
-	MX_USART1_UART_Init();
-	HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buff, 30);
+	huart1.Init.BaudRate = BAUD_RATE;
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		// Initialization Error
+		Error_Handler();
+	}
+	if (HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buff, 30) != HAL_OK) {
+		// Reception Error
+		Error_Handler();
+	}
 }
 
 void readChannelStatus_func() {
