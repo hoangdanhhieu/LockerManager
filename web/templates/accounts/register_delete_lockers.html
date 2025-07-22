@@ -1,0 +1,449 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Dashboard - FaceID Locker{% endblock %}
+
+{% block page_title %}Register/Delete Lockers{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register/Delete Lockers - FaceID Locker Management System</title>
+    <script src="https://cdn.tailwindcss.com">
+// Generate a random unique 3-digit user ID
+function generateUserId() {
+    const usedIds = new Set(Array.from(document.querySelectorAll('.locker-card')).map(card => {
+        const userSpan = card.querySelector('.text-gray-500');
+        const match = userSpan?.textContent?.match(/#(\d{3})/);
+        return match ? match[1] : null;
+    }).filter(Boolean));
+    
+    let newId;
+    do {
+        newId = Math.floor(100 + Math.random() * 900).toString();
+    } while (usedIds.has(newId));
+    return newId;
+}
+
+function createLockerCardHTML(data) {
+    const statusColors = {
+        registered: 'bg-green-100 text-green-800',
+        unregistered: 'bg-red-100 text-red-800',
+    };
+    const iconColors = {
+        registered: 'bg-green-100 text-green-600 fa-lock',
+        unregistered: 'bg-gray-100 text-gray-600 fa-lock',
+    };
+    return `
+        <div class="locker-card bg-white rounded-lg shadow-md p-6 border-2 border-transparent hover:border-indigo-300 cursor-pointer" data-status="${data.status}">
+            <div class="flex justify-between items-start mb-4">
+                <input type="checkbox" class="locker-checkbox hidden">
+                <div class="${iconColors[data.status].split(' ')[0]} w-12 h-12 rounded-full flex items-center justify-center">
+                    <i class="fas ${iconColors[data.status].split(' ')[2]} ${iconColors[data.status].split(' ')[1]}"></i>
+                </div>
+                <div class="relative">
+                    <button class="text-gray-400 hover:text-gray-600" onclick="toggleMenu(this)">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="action-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="editLocker(this)">
+                            <i class="fas fa-edit mr-2"></i>Edit
+                        </button>
+                        <button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onclick="deleteLocker(this)">
+                            <i class="fas fa-trash mr-2"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Locker #${data.number}</h3>
+            <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500">${data.status === 'registered' ? 'User: ' + data.userName + ' (#' + data.userId + ')' : 'Available'}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Extend saveLocker function to include user fields
+function saveLocker(e) {
+    e.preventDefault();
+    const formData = {
+        number: document.getElementById('lockerNumber').value,
+        
+        
+        
+        userName: document.getElementById('userName').value,
+        userId: document.getElementById('userId').value
+    };
+    if (isEditMode && currentEditCard) {
+        updateLockerCard(currentEditCard, formData);
+    } else {
+        createNewLockerCard(formData);
+    }
+    closeModal();
+}
+
+</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .locker-card {
+            transition: all 0.2s ease;
+        }
+        .locker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+
+            <!-- Content -->
+            <main class="p-6">
+                <!-- Action Buttons -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex space-x-4">
+                        <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hidden">
+                            <i class="fas fa-trash"></i>
+                            <span>Delete Selected</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="searchLocker" placeholder="Search lockers..." class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <select id="filterStatus" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">All Status</option>
+                            <option value="registered">Registered</option>
+                            <option value="unregistered">Unregistered</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Lockers Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    
+                <div class="locker-card bg-white rounded-lg shadow-md p-6 border-2 border-transparent hover:border-indigo-300 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <input type="checkbox" class="locker-checkbox hidden">
+                        <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center">
+                            <i class="fas fa-lock text-green-600"></i>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-gray-600" onclick="toggleMenu(this)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="action-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                                <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="editLocker(this)">
+                                    <i class="fas fa-edit mr-2"></i>Edit
+                                </button>
+                                <button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onclick="deleteLocker(this)">
+                                    <i class="fas fa-trash mr-2"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Locker #001</h3>
+                    <p class="text-xs text-gray-500">User: Alice (#101)</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Registered</span>
+                    </div>
+                </div>
+
+                <div class="locker-card bg-white rounded-lg shadow-md p-6 border-2 border-transparent hover:border-indigo-300 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <input type="checkbox" class="locker-checkbox hidden">
+                        <div class="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center">
+                                <i class="fas fa-lock text-gray-600"></i>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-gray-600" onclick="toggleMenu(this)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="action-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                                <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="editLocker(this)">
+                                    <i class="fas fa-edit mr-2"></i>Edit
+                                </button>
+                                <button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onclick="deleteLocker(this)">
+                                    <i class="fas fa-trash mr-2"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Locker #002</h3>
+                    <p class="text-xs text-gray-500">User: Bob (#137)</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Unregistered</span>
+                    </div>
+                </div>
+    <script>
+        let isEditMode = false;
+        let currentEditCard = null;
+
+        // Event listeners
+        document.getElementById('addLockerBtn').addEventListener('click', openAddModal);
+        document.getElementById('searchLocker').addEventListener('input', filterLockers);
+        document.getElementById('filterStatus').addEventListener('change', filterLockers);
+        document.getElementById('lockerForm').addEventListener('submit', saveLocker);
+
+        function openAddModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = 'Add New Locker';
+            document.getElementById('lockerForm').reset();
+            document.getElementById('lockerModal').classList.remove('hidden');
+        }
+
+        function editLocker(button) {
+            isEditMode = true;
+            currentEditCard = button.closest('.locker-card');
+            
+            const lockerNumber = currentEditCard.querySelector('h3').textContent.replace('Locker #', '');
+            const location = currentEditCard.querySelector('p').textContent.replace('Location: ', '');
+            const type = currentEditCard.querySelectorAll('p')[1].textContent.replace('Type: ', '');
+            
+            
+            document.getElementById('modalTitle').textContent = 'Edit Locker';
+            document.getElementById('lockerNumber').value = lockerNumber;
+            document.getElementById('lockerLocation').value = location;
+            document.getElementById('lockerType').value = type;
+            
+            
+            document.getElementById('lockerModal').classList.remove('hidden');
+            hideAllMenus();
+        }
+
+        function deleteLocker(button) {
+            const card = button.closest('.locker-card');
+            const lockerNumber = card.querySelector('h3').textContent;
+            
+            if (confirm(`Are you sure you want to delete ${lockerNumber}?`)) {
+                card.remove();
+                hideAllMenus();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('lockerModal').classList.add('hidden');
+            isEditMode = false;
+            currentEditCard = null;
+        }
+
+        function saveLocker(e) {
+            e.preventDefault();
+            
+            const formData = {
+                number: document.getElementById('lockerNumber').value,
+                
+                
+                status: document.getElementById('lockerStatus').value
+            };
+            
+            if (isEditMode && currentEditCard) {
+                updateLockerCard(currentEditCard, formData);
+            } else {
+                createNewLockerCard(formData);
+            }
+            
+            closeModal();
+        }
+
+        function createNewLockerCard(data) {
+            const lockerGrid = document.querySelector('.grid');
+            const newCard = createLockerCardHTML(data);
+            lockerGrid.insertAdjacentHTML('beforeend', newCard);
+        }
+
+        function updateLockerCard(card, data) {
+            
+            card.querySelector('h3').textContent = `Locker #${data.number}`;
+            
+            
+            
+            // Update status badge
+            const badge = card.querySelector('.text-xs.px-2');
+            const statusColors = {
+                registered: 'bg-green-100 text-green-800',
+                unregistered: 'bg-red-100 text-red-800',
+            };
+            
+            badge.className = `text-xs px-2 py-1 rounded-full ${statusColors[data.status]}`;
+            badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+        }
+
+        function createLockerCardHTML(data) {
+            const statusColors = {
+                registered: 'bg-green-100 text-green-800',
+                unregistered: 'bg-red-100 text-red-800',
+            };
+
+            const iconColors = {
+                registered: 'bg-green-100 text-green-600 fa-lock',
+                unregistered: 'bg-gray-100 text-gray-600 fa-lock',
+            };
+
+            return `
+                <div class="locker-card bg-white rounded-lg shadow-md p-6 border-2 border-transparent hover:border-indigo-300 cursor-pointer" data-status="${data.status}">
+                    <div class="flex justify-between items-start mb-4">
+                        <input type="checkbox" class="locker-checkbox hidden">
+                        <div class="${iconColors[data.status].split(' ')[0]} w-12 h-12 rounded-full flex items-center justify-center">
+                            <i class="fas ${iconColors[data.status].split(' ')[2]} ${iconColors[data.status].split(' ')[1]}"></i>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-gray-600" onclick="toggleMenu(this)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="action-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                                <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="editLocker(this)">
+                                    <i class="fas fa-edit mr-2"></i>Edit
+                                </button>
+                                <button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onclick="deleteLocker(this)">
+                                    <i class="fas fa-trash mr-2"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Locker #${data.number}</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">${data.status === 'registered' ? 'User: #' + Math.floor(Math.random() * 200) : 'Available'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleMenu(button) {
+            hideAllMenus();
+            const menu = button.nextElementSibling;
+            menu.classList.toggle('hidden');
+        }
+
+        function hideAllMenus() {
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+
+        function filterLockers() {
+            const searchTerm = document.getElementById('searchLocker').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            const cards = document.querySelectorAll('.locker-card');
+            
+            cards.forEach(card => {
+                const lockerNumber = card.querySelector('h3').textContent.toLowerCase();
+                const location = card.querySelector('p').textContent.toLowerCase();
+                const status = card.dataset.status;
+                
+                const matchesSearch = lockerNumber.includes(searchTerm) || location.includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || status === statusFilter;
+                
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Click outside to close menus
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                hideAllMenus();
+            }
+        });
+    
+// Generate a random unique 3-digit user ID
+function generateUserId() {
+    const usedIds = new Set(Array.from(document.querySelectorAll('.locker-card')).map(card => {
+        const userSpan = card.querySelector('.text-gray-500');
+        const match = userSpan?.textContent?.match(/#(\d{3})/);
+        return match ? match[1] : null;
+    }).filter(Boolean));
+    
+    let newId;
+    do {
+        newId = Math.floor(100 + Math.random() * 900).toString();
+    } while (usedIds.has(newId));
+    return newId;
+}
+
+document.getElementById('addLockerBtn').addEventListener('click', () => {
+    document.getElementById('userId').value = generateUserId();
+});
+
+function createLockerCardHTML(data) {
+    const statusColors = {
+        registered: 'bg-green-100 text-green-800',
+        unregistered: 'bg-red-100 text-red-800',
+    };
+    const iconColors = {
+        registered: 'bg-green-100 text-green-600 fa-lock',
+        unregistered: 'bg-gray-100 text-gray-600 fa-lock',
+    };
+    return `
+        <div class="locker-card bg-white rounded-lg shadow-md p-6 border-2 border-transparent hover:border-indigo-300 cursor-pointer" data-status="${data.status}">
+            <div class="flex justify-between items-start mb-4">
+                <input type="checkbox" class="locker-checkbox hidden">
+                <div class="${iconColors[data.status].split(' ')[0]} w-12 h-12 rounded-full flex items-center justify-center">
+                    <i class="fas ${iconColors[data.status].split(' ')[2]} ${iconColors[data.status].split(' ')[1]}"></i>
+                </div>
+                <div class="relative">
+                    <button class="text-gray-400 hover:text-gray-600" onclick="toggleMenu(this)">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="action-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="editLocker(this)">
+                            <i class="fas fa-edit mr-2"></i>Edit
+                        </button>
+                        <button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onclick="deleteLocker(this)">
+                            <i class="fas fa-trash mr-2"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Locker #${data.number}</h3>
+            <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500">${data.status === 'registered' ? 'User: ' + data.userName + ' (#' + data.userId + ')' : 'Available'}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Extend saveLocker function to include user fields
+function saveLocker(e) {
+    e.preventDefault();
+    const formData = {
+        number: document.getElementById('lockerNumber').value,
+        
+        
+        
+        userName: document.getElementById('userName').value,
+        userId: document.getElementById('userId').value
+    };
+    if (isEditMode && currentEditCard) {
+        updateLockerCard(currentEditCard, formData);
+    } else {
+        createNewLockerCard(formData);
+    }
+    closeModal();
+}
+
+</script>
+</body>
+</html>
+{% endblock %}

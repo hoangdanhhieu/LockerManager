@@ -1,0 +1,42 @@
+"""
+URL configuration for web project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include
+from . import views
+from django.contrib.auth import views as auth_views
+from django.views.generic.base import RedirectView # Import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/', views.home_dashboard, name='home'),
+    path("login/", auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
+    path('logout/',auth_views.LogoutView.as_view(), name="logout"),
+    
+    path('register_delete_lockers/', views.register_delete_lockers, name='register_delete_lockers'),
+    path('api/register_user', views.api_user_register, name='api_user_register'),
+    path('api/change_passwd_lock_admin', views.api_change_passwd_lock_admin, name='change_passwd_lock_admin'),
+    path('api/upload_user_image/', views.api_upload_user_image, name='api_upload_user_image'),
+    path('usage-history/', views.usage_history, name='usage_history'),
+    path('user-information/', views.user_information, name='user_information'),
+    path('security-alerts/', views.security_alerts, name='security_alerts'),
+    path('register-locker-submit/', views.register_locker_submit, name='register_locker_submit'),
+    path('change_password/', views.change_password, name='change_password'),
+    path('', RedirectView.as_view(pattern_name='home', permanent=False)),
+    
+]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
