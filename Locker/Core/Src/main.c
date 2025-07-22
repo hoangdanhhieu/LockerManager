@@ -64,6 +64,7 @@ uint8_t UNLOCK_TIME = 20; //10ms step
 uint8_t func_code = 0;
 uint8_t tx_buff[30];
 uint8_t rx_buff[30];
+uint8_t last_en_button = 0;
 /* USER CODE END 0 */
 
 /**
@@ -148,9 +149,11 @@ int main(void) {
 			rusc3_func();
 			break;
 		default:
-			if (HAL_GPIO_ReadPin(GPIOC, EN_ALL_Pin) == 0) {
+			uint8_t curr_en_button = HAL_GPIO_ReadPin(GPIOC, EN_ALL_Pin);
+			if (curr_en_button == 0 && last_en_button == 1) {
 				unlock_all();
 			}
+			last_en_button = curr_en_button;
 			continue;
 		}
 		memset(rx_buff, 0, sizeof(rx_buff));
