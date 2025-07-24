@@ -26,17 +26,26 @@ urlpatterns = [
     path('home/', views.home_dashboard, name='home'),
     path("login/", auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/',auth_views.LogoutView.as_view(), name="logout"),
-    
+
     path('register_delete_lockers/', views.register_delete_lockers, name='register_delete_lockers'),
-    path('api/register_user', views.api_user_register, name='api_user_register'),
-    path('api/change_passwd_lock_admin', views.api_change_passwd_lock_admin, name='change_passwd_lock_admin'),
-    path('api/upload_user_image/', views.api_upload_user_image, name='api_upload_user_image'),
     path('usage-history/', views.usage_history, name='usage_history'),
     path('user-information/', views.user_information, name='user_information'),
+    path('get_user_image/<int:user_id>/', views.get_user_image, name='get_user_image'),
     path('security-alerts/', views.security_alerts, name='security_alerts'),
     path('register-locker-submit/', views.register_locker_submit, name='register_locker_submit'),
     path('change_password/', views.change_password, name='change_password'),
     path('', RedirectView.as_view(pattern_name='home', permanent=False)),
-    
+
+    path('api/register_user', views.api_user_register, name='api_user_register'),
+    path('api/change_passwd_lock_admin', views.api_change_passwd_lock_admin, name='change_passwd_lock_admin'),
+    path('api/upload_user_image/', views.api_upload_user_image, name='api_upload_user_image'),
+    path('api/get_user_image/', views.api_get_user_image, name='api_get_user_image'),
+    path('api/check_passwd_lock_admin', views.api_check_passwd_lock_admin, name='check_passwd_lock_admin'),
+    path('api/toggle_user_status/', views.api_toggle_user_status, name='api_toggle_user_status'),
+    path('api/edit_user/', views.api_edit_user, name='api_edit_user'),
+    path('api/update_user_vector/', views.api_update_user_vector, name='api_update_user_vector'),
+    path('api/get_user_vector/', views.api_get_user_vector, name='api_get_user_vector'),
+    path('api/write_log/', views.api_write_log, name='api_write_log'),
+    path('api/mark_recent_activity_seen/', views.api_mark_recent_activity_seen, name='api_mark_recent_activity_seen'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -101,47 +101,25 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+                    <!-- Add above the recent activity list -->
                     <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
-                        <div class="space-y-4">
-                            {# {% for activity in recent_activities %} #}
+                    <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                    
+                    <div class="space-y-4">
+                            {% for activity in recent_activities %}
                             <div class="flex items-start">
-                                <div class="bg-green-100 p-2 rounded-full mr-3">
-                                    <i class="fas fa-check text-green-500"></i> {# Icon based on activity.type #}
+                                <div class="p-2 rounded-full mr-3
+                                    {% if activity.code == 1 %} bg-green-100 {% else %} bg-red-100 {% endif %}">
+                                    <i class="fas {% if activity.code == 1 %} fa-check text-green-500 {% else %} fa-exclamation text-red-500 {% endif %}"></i>
                                 </div>
                                 <div>
-                                    <p class="font-medium">User #142 accessed Locker #012</p> {# {{ activity.message }} #}
-                                    <p class="text-sm text-gray-500">Today, 10:24 AM</p> {# {{ activity.timestamp|date:"D, h:i A" }} #}
+                                    <p class="font-medium">{{ activity.details }}</p>
+                                    <p class="text-sm text-gray-500">{{ activity.at_time|date:"Y-m-d H:i" }}</p>
                                 </div>
                             </div>
-                            <div class="flex items-start">
-                                <div class="bg-red-100 p-2 rounded-full mr-3">
-                                    <i class="fas fa-exclamation text-red-500"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Unauthorized access attempt on Locker #008</p>
-                                    <p class="text-sm text-gray-500">Today, 09:45 AM</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="bg-blue-100 p-2 rounded-full mr-3">
-                                    <i class="fas fa-user-plus text-blue-500"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">New user registered (ID: #157)</p>
-                                    <p class="text-sm text-gray-500">Today, 08:30 AM</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="bg-green-100 p-2 rounded-full mr-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">User #128 accessed Locker #005</p>
-                                    <p class="text-sm text-gray-500">Today, 08:15 AM</p>
-                                </div>
-                            </div>
-                            {# {% endfor %} #}
+                            {% empty %}
+                            <div class="text-gray-400">No recent activity.</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

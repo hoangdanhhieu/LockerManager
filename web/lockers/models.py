@@ -39,7 +39,7 @@ class Lock(models.Model):
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True,
-        db_column='UserID'
+        db_column = 'UserID'
     )
     
     class Meta:

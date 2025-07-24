@@ -116,16 +116,6 @@
             font-size: 0.9rem;
         }
 
-        /* Security Alerts Badge */
-        .alert-badge {
-            background-color: var(--danger-color);
-            color: white;
-            border-radius: 50%;
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            margin-left: auto;
-        }
-
         /* Main Content */
         .main-content {
             margin-left: var(--sidebar-width);
@@ -258,12 +248,6 @@
                     <i class="fas fa-chevron-down ms-auto"></i>
                 </a>
                 <ul class="submenu {% if 'security' in request.resolver_match.url_name %}show{% endif %}">
-                    <li>
-                        <a href="{% url 'security_alerts' %}" class="nav-link {% if request.resolver_match.url_name == 'security_alerts' %}active{% endif %}">
-                            Security Alerts
-                            <span class="alert-badge">{{ security_alerts_count|default:0 }}</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="{% url 'change_password' %}" class="nav-link {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
                             Change Admin Password

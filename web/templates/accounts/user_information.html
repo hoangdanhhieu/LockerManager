@@ -30,6 +30,19 @@
             align-items: center;
             justify-content: center;
         }
+        @keyframes fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-40px) scale(0.98);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+}
+.modal-animate {
+    animation: fadeInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -77,76 +90,40 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
+                            {% for user in users %}
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/1.jpg" alt="">
+                                            <img class="h-10 w-10 rounded-full" src="{{ user.image_url }}" alt="{{ user.name }}">
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">Jane Doe</div>
-                                                <div class="text-sm text-gray-500">0368526668</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                                                <div class="text-sm text-gray-500">{{ user.sdt }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#142</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-01-15</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2025-07-17 10:24</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.reg_time|date:"Y-m-d" }}</td>  
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.last_access|date:"Y-m-d H:i" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                                        {% if user.status %}
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                                        {% else %}
+                                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Inactive</span>
+                                        {% endif %}
+                                        
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <div class="flex space-x-2">
-                                            <button onclick="editUser(142)" class="text-green-600 hover:text-green-900">Edit</button>
-                                            <button onclick="suspendUser(142)" class="text-red-600 hover:text-red-900">Suspend</button>
+                                            <button onclick="editUser({{ user.id }})" class="text-green-600 hover:text-green-900">Edit</button>
+                                            {% if user.status %}
+                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-red-600 hover:text-red-900">Suspend</button>
+                                            {% else %}
+                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-blue-600 hover:text-blue-900">Activate</button>
+                                            {% endif %}
                                         </div>
                                     </td>
                                 </tr>
-                                
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/2.jpg" alt="">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">John Smith</div>
-                                                <div class="text-sm text-gray-500">0368526667</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#128</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-02-20</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2025-07-16 15:30</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Suspended</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <div class="flex space-x-2">
-                                            <button onclick="editUser(128)" class="text-green-600 hover:text-green-900">Edit</button>
-                                            <button onclick="activateUser(128)" class="text-green-600 hover:text-green-900">Activate</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">Mary Johnson</div>
-                                                <div class="text-sm text-gray-500">0368526666</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#157</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-03-10</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2025-07-17 08:30</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <div class="flex space-x-2">
-                                            <button onclick="editUser(157)" class="text-green-600 hover:text-green-900">Edit</button>
-                                            <button onclick="suspendUser(157)" class="text-red-600 hover:text-red-900">Suspend</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -158,7 +135,7 @@
     <!-- Add/Edit User Modal -->
      {% csrf_token %}
     <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md" id="userModalContent">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="userModalTitle" class="text-lg font-semibold">Add New User</h3>
                 <button onclick="closeUserModal()" class="text-gray-500 hover:text-gray-700">
@@ -167,6 +144,7 @@
             </div>
             
             <form id="userForm" novalidate>
+                <input type="hidden" id="userId" name="id" value="">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
                     <input type="text" id="name" name = "name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
@@ -180,8 +158,8 @@
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Status</label>
                     <select id="userStatus" name = "status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        <option value="0">Active</option>
-                        <option value="1">Inactive</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
                     </select>
                 </div>
                 
@@ -204,6 +182,24 @@
             document.getElementById('userModalTitle').textContent = 'Add New User';
             document.getElementById('userForm').reset();
             document.getElementById('userModal').classList.remove('hidden');
+            const modalContent = document.getElementById('userModalContent');
+            modalContent.classList.remove('modal-animate'); // reset
+            void modalContent.offsetWidth; // trigger reflow
+            modalContent.classList.add('modal-animate');
+        }
+
+        function editUser(userId) {
+            const row = document.querySelector(`button[onclick="editUser(${userId})"]`).closest('tr');
+            document.getElementById('userModalTitle').textContent = 'Edit User';
+            document.getElementById('userId').value = userId;
+            document.getElementById('name').value = row.querySelector('td:nth-child(1) .text-sm.font-medium').textContent.trim();
+            document.getElementById('sdt').value = row.querySelector('td:nth-child(1) .text-sm.text-gray-500').textContent.trim();
+            document.getElementById('userStatus').value = row.querySelector('td:nth-child(5) span').textContent.trim() === 'Active' ? '1' : '0';
+            document.getElementById('userModal').classList.remove('hidden');
+            const modalContent = document.getElementById('userModalContent');
+            modalContent.classList.remove('modal-animate'); // reset
+            void modalContent.offsetWidth; // trigger reflow
+            modalContent.classList.add('modal-animate');
         }
 
         function closeUserModal() {
@@ -214,52 +210,41 @@
 
         // start submit form add User
         document.getElementById('userForm').addEventListener('submit', function(event) {
-
-            event.preventDefault(); // Ngăn form submit mặc định
+            event.preventDefault();
+            const userId = document.getElementById('userId').value;
             const name = document.getElementById('name').value;
             const phone = document.getElementById('sdt').value;
-            
+            const status = document.getElementById('userStatus').value;
+        
             const nameResult = validateName(name);
             const phoneResult = validatePhone(phone);
-            
-            //showError('nameError', nameResult.message, nameResult.isValid);
-            //showError('phoneError', phoneResult.message, phoneResult.isValid);
-            
+        
             if (nameResult.isValid && phoneResult.isValid) {
-                const form = event.currentTarget;
-                // Lấy dữ liệu form
-                const formData = new FormData(form);
-                // Chuyển đổi thành object JavaScript
-                const jsonData = Object.fromEntries(formData.entries());
-                
-                // Chuyển đổi thành JSON string
-                const jsonString = JSON.stringify(jsonData);
-                
-                console.log(jsonString);
-
-                const sendForm = new FormData();
-
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;    
-                fetch('/api/register_user', {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const url = userId ? '/api/edit_user/' : '/api/register_user';
+                const payload = userId
+                    ? JSON.stringify({ id: userId, name: name, sdt: phone, status: status })
+                    : JSON.stringify(JSON.stringify({ name: name, sdt: phone, status: status }));
+            
+                fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': csrfToken
                     },
-                    body: JSON.stringify(jsonString)
+                    body: payload
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.error) {
+                    if (data.error || data.success === false) {
                         alert(`Error: ${data.error}`);
                     } else {
-                        alert('User added successfully!');
-                        closeUserModal();
+                        alert(userId ? 'User updated successfully!' : 'User added successfully!');
+                        location.reload(true);
                     }
                 });
-
             } else {
-                log = '';
+                let log = '';
                 if(!nameResult.isValid){
                     log += (nameResult.message);
                 }
@@ -328,21 +313,57 @@
             //showError('phoneError', result.message, result.isValid);
         });
 
-        function editUser(userId) {
-            alert(`Edit User #${userId}`);
+        function toggleUserStatus(userId) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch('/api/toggle_user_status/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User status updated!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
         }
 
-        function suspendUser(userId) {
-            if (confirm(`Are you sure you want to suspend User #${userId}?`)) {
-                alert(`User #${userId} has been suspended`);
-            }
-        }
+        document.getElementById('searchUser').addEventListener('input', function() {
+        const searchValue = this.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+                const name = row.querySelector('td .text-sm.font-medium').textContent.toLowerCase();
+                const sdt = row.querySelector('td .text-sm.text-gray-500').textContent.toLowerCase();
+                if (name.includes(searchValue) || sdt.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
 
-        function activateUser(userId) {
-            if (confirm(`Are you sure you want to activate User #${userId}?`)) {
-                alert(`User #${userId} has been activated`);
-            }
-        }
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            const filterValue = this.value;
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const statusText = row.querySelector('td:nth-child(5) span').textContent.trim().toLowerCase();
+                if (
+                    filterValue === 'all' ||
+                    (filterValue === 'active' && statusText === 'active') ||
+                    (filterValue === 'inactive' && statusText === 'inactive')
+                ) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
