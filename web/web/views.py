@@ -14,66 +14,74 @@ from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 from . import settings
+from . import function
+from django.core.paginator import Paginator
+from django.db.models import Q
 @login_required
 def home_dashboard(request):
-    context = {
-        'total_lockers': Lock.objects.count(),
-        'registered_users': User.objects.count(),
-        'todays_usage': analytics.get_today_usage(),
-        'security_alerts_count': 5,
-        # 'lockers': Locker.objects.all(), # Example: Pass actual data
-        # 'recent_activities': Activity.objects.order_by('-timestamp')[:4],
-        # 'security_alerts': SecurityAlert.objects.filter(is_resolved=False).order_by('-timestamp')[:3],
-    }
+    
+    # Create locks for boards 1-32, each with lock_ids 1-16
+    #locks_to_create = []
+    #for board_id in range(1, 33):  # 1 to 32
+    #    for lock_id in range(1, 17):  # 1 to 16
+    #        locks_to_create.append(Lock(board_id=board_id, lock_id=lock_id))
 
 
     recent_activities = (
         Log.objects.select_related("locker", "locker__user")
-        .filter(code__in=[1, 2], mark = False)  # 1 info, 2 err[3]
+        .filter(code__in=[0, 1, 2, 3, 5, 6], mark = False)
         .order_by("-at_time")
     )
 
-    # Log có code 0 (alert) được coi là Security Alert
     security_alerts_qs = (
-        Log.objects.filter(code__in = [0], mark = False)# 0 alter
+        Log.objects.filter(code__in = [4], mark = False)
+        .select_related("locker")
         .order_by("-at_time")
     )
 
+    security_alerts_with_lockinfo = []
+    
+    for alert in security_alerts_qs:
+        security_alerts_with_lockinfo.append({
+            "id": alert.id,
+            "details": alert.details,
+            "at_time": alert.at_time,
+            "board_id": alert.locker.board_id if alert.locker else None,
+            "lock_id": alert.locker.lock_id if alert.locker else None,
+        })
+        
     context = {
-        "total_lockers":      Lock.objects.count(),
+        "total_lockers":      Lock.objects.filter(user__isnull = False).count(),
         "registered_users":   User.objects.count(),
         "todays_usage":       analytics.get_today_usage(),
         "recent_activities":  recent_activities,
-        "security_alerts":    security_alerts_qs,
-        "security_alerts_count": security_alerts_qs.count(),
+        "security_alerts":    security_alerts_with_lockinfo,
+        "security_alerts_count": len(security_alerts_with_lockinfo),
     }
 
     return render(request, 'accounts/home.html', context)
 
-@login_required
-def register_locker_submit(request):
-    if request.method == 'POST':
-        locker_number = request.POST.get('locker_number')
-        locker_location = request.POST.get('locker_location')
-        locker_type = request.POST.get('locker_type')
-
-        # Here you would process the data, e.g., save to a Locker model
-        # from .models import Locker
-        # Locker.objects.create(number=locker_number, location=locker_location, type=locker_type, status='registered')
-
-        messages.success(request, f'Locker {locker_number} registered successfully!')
-        return redirect('accounts:home') # Redirect back to dashboard
-
-    return redirect('accounts:home') # Handle non-POST requests or errors
-
 # Add other placeholder views as needed
 @login_required
-def register_delete_lockers(request):
-    return render(request, 'accounts/register_delete_lockers.html')
+def lockers(request):
+    return render(request, 'accounts/lockers.html')
 
 @login_required
 def usage_history(request):
-    return render(request, 'accounts/usage_history.html')
+    context = {
+        "range32": range(1, 33),
+        "range16": range(1, 17)
+    }
+    return render(request, 'accounts/usage_history.html', context)
+
+@login_required
+def all_log(request):
+    context = {
+        "range32": range(1, 33),
+        "range16": range(1, 17)
+    }
+    return render(request, 'accounts/all_log.html', context)
+
 
 @login_required
 def user_information(request):
@@ -98,20 +106,6 @@ def user_information(request):
     return render(request, 'accounts/user_information.html', {'users': user_data})
 
 @login_required
-def api_toggle_user_status(request):
-    if( request.method != 'POST'):
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        user_id = data.get('user_id')
-        user = User.objects.get(id = user_id)
-        user.status = 0 if user.status else 1  # Toggle status
-        user.save()
-        return JsonResponse({'success': True, 'new_status': user.status})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
-@login_required
 def get_user_image(request, user_id):
     user = User.objects.filter(id = user_id).first()
     if not user:
@@ -124,7 +118,6 @@ def get_user_image(request, user_id):
         return response
     else:
         image_file_path = os.path.join(settings.MEDIA_ROOT, 'images', 'user_null.png')
-        print(f"Image file path: {image_file_path}")
         response = FileResponse(open(image_file_path, 'rb'), content_type='image/png')
         response['Content-Disposition'] = 'inline; filename="user_null.png"'
         return response
@@ -158,6 +151,8 @@ def api_user_register(request):
         try:
             new_user = User(name = name, sdt = sdt, status = status)
             new_user.save()
+            new_user_id = new_user.id
+            function.write_log(10, user_id = new_user_id)
         except Exception as e:
             return JsonResponse({'error': f'Database save failed: {str(e)}'}, status = 500)
         return JsonResponse({'message': 'Data saved successfully'})
@@ -182,6 +177,7 @@ def api_edit_user(request):
         user.sdt = sdt
         user.status = status
         user.save()
+        function.write_log(7, user_id = user_id)
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status = 400)
@@ -214,11 +210,9 @@ def api_change_passwd_lock_admin(request):
 def api_check_passwd_lock_admin(request):
     if request.method == 'POST':
         try:
-            print("Request body: ", request.body.decode('utf-8'))
             data = json.loads(request.body.decode('utf-8'))
             passwd = str(data["passwd"])
         except Exception as e:
-            print(e)
             return JsonResponse({'error': 'Invalid JSON'}, status = 400)
 
         admin = AdminLock.objects.first()
@@ -250,7 +244,6 @@ def api_upload_user_image(request):
             UserImage.objects.update_or_create(user=user, defaults={'image': img})
             return JsonResponse({'message': 'Image User uploaded successfully', 'image_url': img.image.url})
         except Exception as e:
-            print(e)
             return JsonResponse({'error': 'Invalid data'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -299,6 +292,7 @@ def api_update_user_vector(request):
         try:
             user.vector_id = json.loads(vector)
             user.save()
+            function.write_log(8, user_id = user_id)
             return JsonResponse({'success': True, 'message': 'Vector updated successfully'})
         except Exception as e:
             return JsonResponse({'error': f'Invalid vector format: {str(e)}'}, status=400)
@@ -325,30 +319,26 @@ def api_get_user_vector(request):
 @csrf_exempt
 def api_write_log(request):
     if request.method == 'POST':
-        passwd_lock_admin = request.POST.get("passwd_lock_admin")
-        code = request.POST.get("code")
-        details = request.POST.get("details", "")
-        locker_id = request.POST.get("locker_id", None)
-        mark = request.POST.get("mark", "false").lower() == "true"
-
-        if not passwd_lock_admin or code is None:
-            return JsonResponse({'error': 'Missing required fields'}, status = 400)
-        admin = AdminLock.objects.first()
-        if not admin or not check_password(passwd_lock_admin, admin.password):
-            return JsonResponse({'error': 'Invalid admin password'}, status = 403)
-        locker = None
-        if(locker_id != None):
-            locker = Lock.objects.filter(id = int(locker_id)).first()
-            if not locker:
-                return JsonResponse({'error': 'Locker not found'}, status = 404)
         try:
-            log = Log.objects.create(
-                code = int(code),
-                details = details,
-                locker = locker,
-                mark = mark
-            )
-            return JsonResponse({'success': True, 'log_id': log.id})
+            passwd_lock_admin = request.POST.get("passwd_lock_admin")
+            code = request.POST.get("code")
+            details = request.POST.get("details", "")
+            locker_id = request.POST.get("locker_id", None)
+            board_id = request.POST.get("board_id", None)
+            if not passwd_lock_admin or code is None or not code.isdigit():
+                return JsonResponse({'error': 'Missing required fields'}, status = 400)
+            admin = AdminLock.objects.first()
+            if not admin or not check_password(passwd_lock_admin, admin.password):
+                return JsonResponse({'error': 'Invalid admin password'}, status = 403)
+            locker = None
+            if(locker_id != None and board_id != None):
+                locker = Lock.objects.filter(lock_id = int(locker_id), board_id=int(board_id)).first()
+                if not locker:
+                    return JsonResponse({'error': 'Locker not found'}, status = 404)
+                locker_id = int(locker_id)
+                board_id = int(board_id)
+            code = int(code)
+            return function.write_log(code, details, locker)
         except Exception as e:
             return JsonResponse({'error': f'Failed to write log: {str(e)}'}, status=400)
     else:
@@ -357,8 +347,188 @@ def api_write_log(request):
 @login_required
 def api_mark_recent_activity_seen(request):
     try:
-        # Only mark logs that are currently "recent activity" (code 1 or 2, mark=True)
-        updated = Log.objects.filter(code__in = [1, 2], mark = False).update(mark = True)
+        updated = Log.objects.filter(code__in = [0, 1, 2, 3, 5, 6], mark = False).update(mark = True)
         return JsonResponse({'success': True, 'updated': updated})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+def api_mark_security_alerts_seen(request):
+    try:
+        updated = Log.objects.filter(code__in = [4], mark = False).update(mark = True)
+        return JsonResponse({'success': True, 'updated': updated})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+
+@login_required
+def api_delete_user(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            user_id = data.get('user_id')
+            user = User.objects.filter(id = user_id).first()
+            if not user:
+                return JsonResponse({'success': False, 'error': 'User not found'}, status = 404)
+            user.delete()
+            function.write_log(9, user_id = user_id)
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status = 400)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status = 405)
+
+@csrf_exempt
+def api_get_user_list(request):
+    if request.method == 'POST':
+        try:
+            passwd_lock_admin = request.POST.get("passwd_lock_admin")
+            if not passwd_lock_admin:
+                return JsonResponse({'error': 'Missing admin password'}, status=400)
+            admin = AdminLock.objects.first()
+            if not admin or not check_password(passwd_lock_admin, admin.password):
+                return JsonResponse({'error': 'Invalid admin password'}, status=403)
+            users = User.objects.all().values('id', 'name', 'status')
+            user_list = [
+                {'userid': u['id'], 'name': u['name'], 'status': u['status']}
+                for u in users
+            ]
+            return JsonResponse({'success': True, 'users': user_list})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@login_required
+def api_get_lockers_by_board(request):
+    if request.method == 'GET':
+        try:
+            board = request.GET.get('board')
+            if not board:
+                return JsonResponse({'success': False, 'error': 'Missing board parameter'}, status=400)
+            if board == 'all':
+                lockers = Lock.objects.select_related('user').all()
+            else:
+                lockers = Lock.objects.select_related('user').filter(board_id=board)
+            data = [
+                {
+                    'locker_id': locker.lock_id,
+                    'board_id': locker.board_id,
+                    'user': locker.user.name if locker.user else None,
+                    'user_id': locker.user.id if locker.user else None,
+                    'status': 'registered' if locker.user else 'unregistered'
+                }
+                for locker in lockers
+            ]
+            return JsonResponse({'success': True, 'lockers': data})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@login_required
+def api_usage_history(request):
+    if request.method == 'GET':
+        # Lấy tham số filter từ URL
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 10))
+        user_id = request.GET.get('user_id')
+        board_id = request.GET.get('board_id')
+        locker_id = request.GET.get('locker_id')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        logs = Log.objects.select_related("locker", "locker__user").filter(code__in=[1, 3, 4])
+        # Áp dụng bộ lọc nếu có
+        if user_id != ''and user_id:
+            logs = logs.filter(Q(locker__user__name__icontains = user_id) | Q(locker__user__sdt = user_id))
+        if board_id != '' and board_id != 'all' and board_id:
+            logs = logs.filter(locker__board_id = board_id)
+        if locker_id != '' and locker_id != 'all' and locker_id:
+            logs = logs.filter(locker__lock_id = locker_id)
+        if start_date != '' and start_date:
+            logs = logs.filter(at_time__gte = start_date)
+        if end_date != '' and end_date:
+            logs = logs.filter(at_time__lte = end_date)
+
+        logs = logs.order_by('-at_time')
+        paginator = Paginator(logs, per_page)
+        page_obj = paginator.get_page(page)
+
+        data = []
+        for log in page_obj:
+            data.append({
+                'date_time': log.at_time.strftime('%Y-%m-%d %H:%M'),
+                'user': f'User #{log.locker.user.id} {log.locker.user.name}' if log.locker and log.locker.user else '',
+                'board': f'#{log.locker.board_id:02d}' if log.locker else '',
+                'locker': f'#{log.locker.lock_id:03d}' if log.locker else '',
+                'action': 'Access' if log.code == 1 else 'Failed Access'
+            })
+        return JsonResponse({
+            'success': True,
+            'logs': data,
+            'total': paginator.count,
+            'num_pages': paginator.num_pages,
+            'current_page': page_obj.number
+        })
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@login_required
+def api_all_log(request):
+    if request.method == 'GET':
+        # Lấy tham số filter từ URL
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 10))
+        user_id = request.GET.get('user_id')
+        board_id = request.GET.get('board_id')
+        locker_id = request.GET.get('locker_id')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        logs = Log.objects.select_related("locker", "locker__user")
+        # Áp dụng bộ lọc nếu có
+        if user_id != ''and user_id:
+            logs = logs.filter(Q(locker__user__name__icontains = user_id) | Q(locker__user__sdt = user_id))
+        if board_id != '' and board_id != 'all' and board_id:
+            logs = logs.filter(locker__board_id = board_id)
+        if locker_id != '' and locker_id != 'all' and locker_id:
+            logs = logs.filter(locker__lock_id = locker_id)
+        if start_date != '' and start_date:
+            logs = logs.filter(at_time__gte = start_date)
+        if end_date != '' and end_date:
+            logs = logs.filter(at_time__lte = end_date)
+
+        logs = logs.order_by('-at_time')
+        paginator = Paginator(logs, per_page)
+        page_obj = paginator.get_page(page)
+
+        data = []
+        for log in page_obj:
+            data.append({
+                'id': log.id,
+                'details': log.details,
+                'date_time': log.at_time.strftime('%Y-%m-%d %H:%M'),
+                'user': f'User #{log.locker.user.id} {log.locker.user.name}' if log.locker and log.locker.user else '',
+                'board': f'#{log.locker.board_id:02d}' if log.locker else '',
+                'locker': f'#{log.locker.lock_id:03d}' if log.locker else '',
+            })
+        return JsonResponse({
+            'success': True,
+            'logs': data,
+            'total': paginator.count,
+            'num_pages': paginator.num_pages,
+            'current_page': page_obj.number
+        })
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@login_required
+def api_toggle_user_status(request):
+    if( request.method != 'POST'):
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        user_id = data.get('user_id')
+        user = User.objects.get(id = user_id)
+        user.status = 0 if user.status else 1  # Toggle status
+        user.save()
+        return JsonResponse({'success': True, 'new_status': user.status})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)

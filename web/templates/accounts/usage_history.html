@@ -29,6 +29,7 @@
             align-items: center;
             justify-content: center;
         }
+
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -40,176 +41,69 @@
 
                 <!-- Filters -->
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="text-lg font-semibold mb-4">Filters</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <h3 class="text-lg font-semibold mb-4">Search</h3>
+                    <form id="filter-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-gray-700 text-sm font-medium mb-2">Date Range</label>
-                            <select id="dateRange" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <option value="today">Today</option>
-                                <option value="week">This Week</option>
-                                <option value="month">This Month</option>
-                                <option value="custom">Custom Range</option>
+                        <label class="block text-gray-700 text-sm font-medium mb-2" >Từ ngày</label>
+                        <input type="date" id="startDate" name="startDate"  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>           
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Đến ngày</label>
+                        <input type="date" id="endDate" name="endDate"  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Board</label>
+                            <select id="boardFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Board</option>
+                                {% for i in range32 %}
+                                <option value="{{i}}">Board #{{i}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-2">Locker</label>
                             <select id="lockerFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="all">All Lockers</option>
-                                <option value="001">Locker #001</option>
-                                <option value="002">Locker #002</option>
-                                <option value="003">Locker #003</option>
-                                <option value="004">Locker #004</option>
-                                <option value="005">Locker #005</option>
+                                {% for i in range16 %}
+                                <option value="{{i}}">Locker #{{i}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-2">User</label>
-                            <input type="text" id="userFilter" placeholder="User ID or Name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="userFilter" placeholder="Name or SDT" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div class="flex items-end">
-                            <button onclick="applyFilters()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
-                                Apply Filters
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
+                                Search
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 <!-- Usage History Table -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold">Access History</h3>
-                        <div class="flex space-x-2">
-                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
-                                <i class="fas fa-download mr-2"></i>Export CSV
-                            </button>
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                                <i class="fas fa-file-pdf mr-2"></i>Export PDF
-                            </button>
-                        </div>
                     </div>
-                    
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date/Time</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Board</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locker</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="historyTableBody">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-07-17 10:24 AM</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/1.jpg" alt="">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">User #142</div>
-                                                <div class="text-sm text-gray-500">jane.doe@email.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#012</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Access</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2h 15m</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Completed</span>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-07-17 09:45 AM</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/2.jpg" alt="">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">User #128</div>
-                                                <div class="text-sm text-gray-500">john.smith@email.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#008</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Failed Access</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Failed</span>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-07-17 08:30 AM</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/3.jpg" alt="">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">User #157</div>
-                                                <div class="text-sm text-gray-500">mary.johnson@email.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#005</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Access</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1h 45m</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Completed</span>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-07-17 08:15 AM</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/4.jpg" alt="">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">User #089</div>
-                                                <div class="text-sm text-gray-500">mike.wilson@email.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#015</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Access</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">3h 20m</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Completed</span>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-07-17 07:45 AM</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/5.jpg" alt="">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">User #201</div>
-                                                <div class="text-sm text-gray-500">sarah.brown@email.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#003</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Partial Access</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">0h 30m</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Interrupted</span>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
                     
-                    <!-- Pagination -->
+                
+                    <!-- Pagination 
                     <div class="flex items-center justify-between mt-6">
                         <div class="text-sm text-gray-700">
                             Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">247</span> results
@@ -226,32 +120,96 @@
                             </button>
                         </div>
                     </div>
+                -->
+                <div id="pagination" class="flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-1000">
+                        <span id="current-page" class="font-medium">1</span> / <span id="total-pages" class="font-medium">1</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="prev-page" class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Previous</button>
+                        <button id="next-page" class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Next</button>
+                    </div>
+                </div>
+
                 </div>
             </main>
         </div>
     </div>
 
     <script>
-        function applyFilters() {
-            const dateRange = document.getElementById('dateRange').value;
-            const lockerFilter = document.getElementById('lockerFilter').value;
-            const userFilter = document.getElementById('userFilter').value;
-            
-            // In a real application, this would make an API call to filter the data
-            console.log('Applying filters:', { dateRange, lockerFilter, userFilter });
-            
-            // For demo purposes, we'll just show an alert
-            alert('Filters applied! In a real application, this would update the table with filtered data.');
-        }
+        document.addEventListener("DOMContentLoaded", function() {
+            let currentPage = 1;
+            const perPage = 10;
+
+            function loadUsageHistory(page = 1) {
+                let user_id = document.getElementById('userFilter').value;
+                let board_id = document.getElementById('boardFilter').value;
+                let locker_id = document.getElementById('lockerFilter').value;
+                let startDate = document.getElementById('startDate').value;
+                let endDate = document.getElementById('endDate').value;
+
+                let params = new URLSearchParams({
+                    page: page,
+                    per_page: perPage
+                });
+
+                if(user_id) params.append('user_id', user_id);
+                if(board_id) params.append('board_id', board_id);
+                if(locker_id) params.append('locker_id', locker_id);
+                if(startDate) params.append('start_date', startDate);
+                if(endDate) params.append('end_date', endDate);
+
+                fetch(`/api/usage_history/?${params.toString()}`)
+                    .then(resp => resp.json())
+                    .then(data => {
+                        if (data.success) {
+                            let tbody = '';
+                            data.logs.forEach(log => {
+                                tbody += `
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.date_time}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">${log.user}</div>
+                                                <div class="text-sm text-gray-500">${log.sdt}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.board}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.locker}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="${log.action === 'Access' ? 'bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full' : 'bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full'}">${log.action}</span>
+                                    </td>
+                                </tr>`;
+                            });
+                            document.querySelector("#historyTableBody").innerHTML = tbody;
+                            document.getElementById('current-page').textContent = data.current_page;
+                            document.getElementById('total-pages').textContent = data.num_pages;
+                            currentPage = data.current_page;
+                        }
+                    });
+            }
         
-        // Add event listeners for real-time filtering
-        document.getElementById('dateRange').addEventListener('change', applyFilters);
-        document.getElementById('lockerFilter').addEventListener('change', applyFilters);
-        document.getElementById('userFilter').addEventListener('input', function() {
-            // Debounce the input
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(applyFilters, 500);
+            // Filter submit
+            document.getElementById('filter-form').addEventListener('submit', function(e){
+                e.preventDefault();
+                loadUsageHistory(1);
+            });
+        
+            // Pagination buttons
+            document.getElementById('prev-page').addEventListener('click', function(){
+                if(currentPage > 1) loadUsageHistory(currentPage - 1);
+            });
+            document.getElementById('next-page').addEventListener('click', function() {
+                const total = parseInt(document.getElementById('total-pages').textContent);
+                if(currentPage < total) loadUsageHistory(currentPage + 1);
+            });
+        
+            loadUsageHistory();
         });
+
+
     </script>
 </body>
 </html>

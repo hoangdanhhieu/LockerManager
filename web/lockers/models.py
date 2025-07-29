@@ -32,8 +32,12 @@ class UserImage(models.Model):
     def __str__(self):
         return f"Avatar for {self.user.name}"
 
+
+    
 class Lock(models.Model):
     id = models.AutoField(primary_key=True)
+    board_id = models.IntegerField(null=False)
+    lock_id = models.IntegerField(null=False)
     user = models.ForeignKey(
         User, 
         on_delete=models.SET_NULL, 
@@ -47,7 +51,7 @@ class Lock(models.Model):
         
     def __str__(self):
         return f"Lock {self.id}"
-# code = 0 alter \ 1 info \ 2 err
+
 class Log(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.IntegerField(null=True, blank=True, db_column='Code')
@@ -61,7 +65,7 @@ class Log(models.Model):
         blank=True,
         db_column='LockerID'
     )
-    
+
     class Meta:
         db_table = 'Log'
         ordering = ['-at_time']

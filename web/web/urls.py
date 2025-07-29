@@ -27,13 +27,13 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/',auth_views.LogoutView.as_view(), name="logout"),
 
-    path('register_delete_lockers/', views.register_delete_lockers, name='register_delete_lockers'),
+    path('lockers/', views.lockers, name='lockers'),
     path('usage-history/', views.usage_history, name='usage_history'),
     path('user-information/', views.user_information, name='user_information'),
     path('get_user_image/<int:user_id>/', views.get_user_image, name='get_user_image'),
     path('security-alerts/', views.security_alerts, name='security_alerts'),
-    path('register-locker-submit/', views.register_locker_submit, name='register_locker_submit'),
     path('change_password/', views.change_password, name='change_password'),
+    path('all_log/', views.all_log, name='all_log'),
     path('', RedirectView.as_view(pattern_name='home', permanent=False)),
 
     path('api/register_user', views.api_user_register, name='api_user_register'),
@@ -47,5 +47,11 @@ urlpatterns = [
     path('api/get_user_vector/', views.api_get_user_vector, name='api_get_user_vector'),
     path('api/write_log/', views.api_write_log, name='api_write_log'),
     path('api/mark_recent_activity_seen/', views.api_mark_recent_activity_seen, name='api_mark_recent_activity_seen'),
+    path('api/mark_security_alerts_seen/', views.api_mark_security_alerts_seen, name='api_mark_security_alerts_seen'),
+    path('api/delete_user/', views.api_delete_user, name='api_delete_user'),
+    path('api/get_user_list/', views.api_get_user_list, name='api_get_user_list'),
+    path('api/usage_history/', views.api_usage_history, name='api_usage_history'),
+    path('api/get_lockers_by_board/', views.api_get_lockers_by_board, name='api_get_lockers_by_board'),
+    path('api/all_log/', views.api_all_log, name='api_all_log'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 
 def tesgetUserimg():
     url = "http://127.0.0.1:8000/api/get_user_image/"
@@ -41,7 +42,7 @@ def send_vectorid():
 def get_vectorid():
     url = "http://127.0.0.1:8000/api/get_user_vector/"
     data = {
-        "passwd_lock_admin": "Hoanghieu.2702",
+        "passwd_lock_admin": "Hoanghieu.113",
         "user_id": 1
     }
     response = requests.post(url, data=data)
@@ -51,9 +52,17 @@ def write_log():
     url = "http://127.0.0.1:8000/api/write_log/"
     data = {
         "passwd_lock_admin": "Hoanghieu.2702",
-        "code": 0,
-        "details": "Mở khóa tủ #2",
+        "code": 4,
+        "locker_id": 4,
+        "board_id": 4,
+        "details": "",
     }
     response = requests.post(url, data=data)
     print(response.json())
-write_log()
+
+def get_user_list():
+    url = "http://127.0.0.1:8000/api/get_user_list/"
+    data = {"passwd_lock_admin": "Hoanghieu.2702"}
+    response = requests.post(url, data=data)
+    print(response.json())
+testUpload()

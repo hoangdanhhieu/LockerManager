@@ -151,7 +151,7 @@ void unlock_func() {
 	tx_buff[3] = UNLOCK_CODE;
 	tx_buff[4] = 0x02;
 	tx_buff[5] = rx_buff[5];
-	rx_buff[6] = 0x01;
+	tx_buff[6] = 0x01;
 	tx_buff[7] = checksum(tx_buff, 7);
 	if (rx_buff[5] == 0) {
 		for (uint8_t i = 1; i <= MAX_CHANNEL; i++) {

@@ -223,8 +223,8 @@
                 </a>
                 <ul class="submenu {% if 'management' in request.resolver_match.url_name %}show{% endif %}">
                     <li>
-                        <a href="{% url 'register_delete_lockers' %}" class="nav-link {% if request.resolver_match.url_name == 'register_delete_lockers' %}active{% endif %}">
-                            Register/Delete Lockers
+                        <a href="{% url 'lockers' %}" class="nav-link {% if request.resolver_match.url_name == 'lockers' %}active{% endif %}">
+                            Lockers
                         </a>
                     </li>
                     <li>
@@ -235,6 +235,11 @@
                     <li>
                         <a href="{% url 'user_information' %}" class="nav-link {% if request.resolver_match.url_name == 'user_information' %}active{% endif %}">
                             User Information
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'all_log' %}" class="nav-link {% if request.resolver_match.url_name == 'all_log' %}active{% endif %}">
+                            Log
                         </a>
                     </li>
                 </ul>
@@ -255,6 +260,7 @@
                     </li>
                 </ul>
             </li>
+
             
             <!-- Divider -->
             <li style="margin: 20px 0; border-top: 1px solid rgba(255,255,255,0.1);"></li>

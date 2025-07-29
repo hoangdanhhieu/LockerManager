@@ -1,0 +1,267 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Dashboard - FaceID Locker{% endblock %}
+
+{% block page_title %}Lockers{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lockers - FaceID Locker Management System</title>
+    <script src="https://cdn.tailwindcss.com">
+</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .locker-card {
+            transition: all 0.2s ease;
+        }
+        .locker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+
+            <!-- Content -->
+            <main class="p-6">
+                <!-- Action Buttons -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <label for="boardSelect" class="font-medium">Select Board:</label>
+                        <select id="boardSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <!-- Options will be loaded by JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <!-- Lockers Grid -->
+            </div>
+        </div>
+    </div>
+    <script>
+        let isEditMode = false;
+        let currentEditCard = null;
+
+        function openAddModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = 'Add New Locker';
+            document.getElementById('lockerForm').reset();
+            document.getElementById('lockerModal').classList.remove('hidden');
+        }
+
+        function editLocker(button) {
+            isEditMode = true;
+            currentEditCard = button.closest('.locker-card');
+            
+            const lockerNumber = currentEditCard.querySelector('h3').textContent.replace('Locker #', '');
+            const location = currentEditCard.querySelector('p').textContent.replace('Location: ', '');
+            const type = currentEditCard.querySelectorAll('p')[1].textContent.replace('Type: ', '');
+            
+            
+            document.getElementById('modalTitle').textContent = 'Edit Locker';
+            document.getElementById('lockerNumber').value = lockerNumber;
+            document.getElementById('lockerLocation').value = location;
+            document.getElementById('lockerType').value = type;
+            
+            
+            document.getElementById('lockerModal').classList.remove('hidden');
+            hideAllMenus();
+        }
+
+        function deleteLocker(button) {
+            const card = button.closest('.locker-card');
+            const lockerNumber = card.querySelector('h3').textContent;
+            
+            if (confirm(`Are you sure you want to delete ${lockerNumber}?`)) {
+                card.remove();
+                hideAllMenus();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('lockerModal').classList.add('hidden');
+            isEditMode = false;
+            currentEditCard = null;
+        }
+
+        function saveLocker(e) {
+            e.preventDefault();
+            
+            const formData = {
+                number: document.getElementById('lockerNumber').value,
+                
+                
+                status: document.getElementById('lockerStatus').value
+            };
+            
+            if (isEditMode && currentEditCard) {
+                updateLockerCard(currentEditCard, formData);
+            } else {
+                createNewLockerCard(formData);
+            }
+            
+            closeModal();
+        }
+
+        function createNewLockerCard(data) {
+            const lockerGrid = document.querySelector('.grid');
+            const newCard = createLockerCardHTML(data);
+            lockerGrid.insertAdjacentHTML('beforeend', newCard);
+        }
+
+        function updateLockerCard(card, data) {
+            
+            card.querySelector('h3').textContent = `Locker #${data.number}`;
+            
+            
+            
+            // Update status badge
+            const badge = card.querySelector('.text-xs.px-2');
+            const statusColors = {
+                registered: 'bg-green-100 text-green-800',
+                unregistered: 'bg-red-100 text-red-800',
+            };
+            
+            badge.className = `text-xs px-2 py-1 rounded-full ${statusColors[data.status]}`;
+            badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+        }
+
+        function createLockerCardHTML(data) {
+            const statusColors = {
+                registered: 'bg-green-100 text-green-800',
+                unregistered: 'bg-red-100 text-red-800',
+            };
+
+            const iconColors = {
+                registered: 'bg-green-100 text-green-600 fa-lock',
+                unregistered: 'bg-red-100 text-red-600 fa-lock',
+            };
+            return `
+                <div class="locker-card bg-white rounded-lg shadow-md p-6 border-2 border-transparent hover:border-indigo-300 cursor-pointer" data-status="${data.status}">
+                    <div class="flex justify-between items-start mb-4">
+                        <input type="checkbox" class="locker-checkbox hidden">
+                        <div class="${iconColors[data.status].split(' ')[0]} w-12 h-12 rounded-full flex items-center justify-center">
+                            <i class="fas ${iconColors[data.status].split(' ')[2]} ${iconColors[data.status].split(' ')[1]}"></i>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Locker #${data.number}</h3>
+                    <div class="flex items-center justify-between">
+                        
+                        <span class="${statusColors[data.status]} text-xs px-2 py-1 rounded-full">${data.status === 'registered' ? 'User: #' + Math.floor(Math.random() * 200) : 'unregistered'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleMenu(button) {
+            hideAllMenus();
+            const menu = button.nextElementSibling;
+            menu.classList.toggle('hidden');
+        }
+
+        function hideAllMenus() {
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+
+        // Click outside to close menus
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                hideAllMenus();
+            }
+        });
+    
+// Generate a random unique 3-digit user ID
+function generateUserId() {
+    const usedIds = new Set(Array.from(document.querySelectorAll('.locker-card')).map(card => {
+        const userSpan = card.querySelector('.text-gray-500');
+        const match = userSpan?.textContent?.match(/#(\d{3})/);
+        return match ? match[1] : null;
+    }).filter(Boolean));
+    
+    let newId;
+    do {
+        newId = Math.floor(100 + Math.random() * 900).toString();
+    } while (usedIds.has(newId));
+    return newId;
+}
+
+function loadBoards() {
+    fetch('/api/get_lockers_by_board/?board=all')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const boards = [...new Set(data.lockers.map(locker => locker.board_id))];
+                const select = document.getElementById('boardSelect');
+                select.innerHTML = boards.map(b => `<option value="${b}">Board ${b}</option>`).join('');
+                if (boards.length > 0) {
+                    select.value = boards[0];
+                    loadLockersByBoard(boards[0]);
+                }
+            }
+        });
+}
+
+// Fetch lockers for selected board
+function loadLockersByBoard(board) {
+    fetch(`/api/get_lockers_by_board/?board=${board}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderLockers(data.lockers);
+            }
+        });
+}
+
+// Render lockers (replace this with your actual rendering logic)
+function renderLockers(lockers) {
+    const grid = document.querySelector('.grid');
+    grid.innerHTML = '';
+    lockers.forEach(locker => {
+        grid.insertAdjacentHTML('beforeend', createLockerCardHTML({
+            number: locker.locker_id,
+            status: locker.status,
+            userName: locker.user || '',
+            userId: locker.user_id || ''
+        }));
+    });
+}
+
+
+// Listen for board select change
+document.getElementById('boardSelect').addEventListener('change', function() {
+    loadLockersByBoard(this.value);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadBoards();
+});
+
+</script>
+</body>
+</html>
+{% endblock %}
