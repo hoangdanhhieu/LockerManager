@@ -19,14 +19,6 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 @login_required
 def home_dashboard(request):
-    
-    # Create locks for boards 1-32, each with lock_ids 1-16
-    #locks_to_create = []
-    #for board_id in range(1, 33):  # 1 to 32
-    #    for lock_id in range(1, 17):  # 1 to 16
-    #        locks_to_create.append(Lock(board_id=board_id, lock_id=lock_id))
-
-
     recent_activities = (
         Log.objects.select_related("locker", "locker__user")
         .filter(code__in=[0, 1, 2, 3, 5, 6], mark = False)
@@ -131,18 +123,25 @@ def security_alerts(request):
 def change_password(request):
     return render(request, 'accounts/change_password.html')
 
-@login_required
+@csrf_exempt
 def api_user_register(request):
     if request.method == 'POST':
         try:
-            data = json.loads(json.loads(request.body.decode('utf-8')))
-            name = str(data["name"])
-            sdt = str(data["sdt"])
-            status = int(data["status"])
+            #data = json.loads(request.body.decode('utf-8'))
+            name = str(request.POST.get("name"))
+            sdt = str(request.POST.get("sdt"))
+            status = int(request.POST.get("status"))
+            passwd = str(request.POST.get("passwd_lock_admin"))
             if((len(name) + len(sdt)) == 0):
-                raise
-        except json.JSONDecodeError:
+                raise "Name and phone number cannot be empty"
+        except Exception as e:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        admin = AdminLock.objects.first()
+        if not admin:
+            return JsonResponse({'error': 'Admin password not set'}, status=404)
+        if not check_password(passwd, admin.password):
+            return JsonResponse({'success': False, 'error': 'Invalid password'})
 
         # Check if sdt already exists
         if User.objects.filter(sdt = sdt).exists():
@@ -155,6 +154,7 @@ def api_user_register(request):
             function.write_log(10, user_id = new_user_id)
         except Exception as e:
             return JsonResponse({'error': f'Database save failed: {str(e)}'}, status = 500)
+
         return JsonResponse({'message': 'Data saved successfully'})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status = 405)
