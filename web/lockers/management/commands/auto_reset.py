@@ -6,5 +6,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if os.path.exists('db.sqlite3'):
             os.remove('db.sqlite3')
+        #remove all images in media/images
+        media_images_path = os.path.join('media', 'images')
+        if os.path.exists(media_images_path):
+            for filename in os.listdir(media_images_path):
+                file_path = os.path.join(media_images_path, filename)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
         call_command('migrate')
+        call_command('makemigrations')
         self.stdout.write(self.style.SUCCESS('Đã reset database & dữ liệu về trạng thái mặc định!'))

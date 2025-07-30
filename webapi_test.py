@@ -67,8 +67,11 @@ def get_user_list():
     print(response.json())
 
 def reg_user():
-    url = "https://lockermanager.onrender.com/api/register_user"
-    data = {"passwd_lock_admin": "Hoanghieu.2702", "name": "Anh Da Den", "sdt": "0368566777", "status": 1}
-    response = requests.post(url, data=data)
+    url = "http://127.0.0.1:8000/api/register_user"
+    files = {
+        "image": open("/home/nonamezz/Downloads/cow.jpeg", "rb")
+    }
+    data = {"passwd_lock_admin": "Hoanghieu.2702", "name": "Anh Da Den", "status": 1}
+    response = requests.post(url, data=data, files = files)
     print(response.json())
 reg_user()

@@ -38,7 +38,6 @@ urlpatterns = [
 
     path('api/register_user', views.api_user_register, name='api_user_register'),
     path('api/change_passwd_lock_admin', views.api_change_passwd_lock_admin, name='change_passwd_lock_admin'),
-    path('api/upload_user_image/', views.api_upload_user_image, name='api_upload_user_image'),
     path('api/get_user_image/', views.api_get_user_image, name='api_get_user_image'),
     path('api/check_passwd_lock_admin', views.api_check_passwd_lock_admin, name='check_passwd_lock_admin'),
     path('api/toggle_user_status/', views.api_toggle_user_status, name='api_toggle_user_status'),

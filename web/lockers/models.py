@@ -6,7 +6,7 @@ import json
 class User(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, null=False)
-    sdt = models.CharField(max_length=255, unique=True, null=False, db_column='SDT')
+    sdt = models.CharField(max_length=255, unique=True, null=True, db_column='SDT')
     vector_id = models.JSONField(null=True, blank=True, db_column='VectorID')
     RegTime = models.DateTimeField(auto_now_add=True, db_column='RegTime')
     status = models.IntegerField(default = 0, db_column='status')

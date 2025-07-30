@@ -129,11 +129,11 @@ def api_user_register(request):
         try:
             #data = json.loads(request.body.decode('utf-8'))
             name = str(request.POST.get("name"))
-            sdt = str(request.POST.get("sdt"))
             status = int(request.POST.get("status"))
             passwd = str(request.POST.get("passwd_lock_admin"))
-            if((len(name) + len(sdt)) == 0):
-                raise "Name and phone number cannot be empty"
+            image_file = request.FILES.get("image")
+            if(len(name) == 0 or not image_file):
+                raise ValueError("Name and image are required fields")
         except Exception as e:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
@@ -142,20 +142,17 @@ def api_user_register(request):
             return JsonResponse({'error': 'Admin password not set'}, status=404)
         if not check_password(passwd, admin.password):
             return JsonResponse({'success': False, 'error': 'Invalid password'})
-
-        # Check if sdt already exists
-        if User.objects.filter(sdt = sdt).exists():
-            return JsonResponse({'error': 'Phone number already exists'}, status = 400)
         # Lưu vào database
         try:
-            new_user = User(name = name, sdt = sdt, status = status)
+            new_user = User(name = name, status = status)
             new_user.save()
             new_user_id = new_user.id
             function.write_log(10, user_id = new_user_id)
+            img = Image.objects.create(title=f"image_user_{new_user_id}", image = image_file)
+            UserImage.objects.update_or_create(user = new_user, defaults = {'image': img})
+            return JsonResponse({'message': 'Data saved successfully'})
         except Exception as e:
             return JsonResponse({'error': f'Database save failed: {str(e)}'}, status = 500)
-
-        return JsonResponse({'message': 'Data saved successfully'})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status = 405)
 
@@ -224,29 +221,6 @@ def api_check_passwd_lock_admin(request):
             return JsonResponse({'success': False, 'error': 'Invalid password'})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)    
-
-@csrf_exempt
-def api_upload_user_image(request):
-    if request.method == 'POST':
-        try:
-            passwd_lock_admin = request.POST.get("passwd_lock_admin")
-            user_id = request.POST.get("user_id")
-            image_file = request.FILES.get("image")
-            if not passwd_lock_admin or not user_id or not image_file:
-                return JsonResponse({'error': 'Missing required fields'}, status=400)
-            admin = AdminLock.objects.first()
-            if not admin or not check_password(passwd_lock_admin, admin.password):
-                return JsonResponse({'error': 'Invalid admin password'}, status=403)
-            user = User.objects.filter(id=int(user_id)).first()
-            if not user:
-                return JsonResponse({'error': 'User not found'}, status=404)
-            img = Image.objects.create(title=f"image_user_{user_id}", image=image_file)
-            UserImage.objects.update_or_create(user=user, defaults={'image': img})
-            return JsonResponse({'message': 'Image User uploaded successfully', 'image_url': img.image.url})
-        except Exception as e:
-            return JsonResponse({'error': 'Invalid data'}, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def api_get_user_image(request):
