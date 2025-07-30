@@ -11,3 +11,4 @@ class Command(BaseCommand):
                 locks_to_create.append(Lock(board_id=board_id, lock_id=lock_id))
         Lock.objects.bulk_create(locks_to_create)
         self.stdout.write(self.style.SUCCESS('Đã hoàn thành thêm dữ liệu!'))
+
