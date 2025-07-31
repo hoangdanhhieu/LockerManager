@@ -43,6 +43,43 @@
 .modal-animate {
     animation: fadeInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+#locker-list-content {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 8px;
+    background: #f4f8fc;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+#locker-list-content li {
+    padding: 12px 20px;
+    margin: 0;
+    border-bottom: 1px solid #e6e9ef;
+    font-size: 17px;
+    color: #333;
+    position: relative;
+    transition: background 0.2s;
+}
+
+#locker-list-content li:last-child {
+    border-bottom: none;
+}
+
+#locker-list-content li::before {
+    content: "🔒";
+    margin-right: 12px;
+    color: #1976d2;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+#locker-list-content li:hover {
+    background: #e3f1fb;
+}
+
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -112,7 +149,17 @@
                                             {% else %}
                                                 <button onclick="toggleUserStatus({{ user.id }})" class="text-blue-600 hover:text-blue-900">Activate</button>
                                             {% endif %}
+                                            <button 
+                                                type="button"
+                                                class="text-green-600 hover:text-green-900"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#userLockerModal"
+                                                data-user-id="{{ user.id }}"
+                                                data-user-name="{{ user.name }}">
+                                                Xem tủ
+                                            </button>
                                         </div>
+
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -165,6 +212,23 @@
                 </div>
             </form>
         </div>
+    </div>
+
+    <div class="modal fade" id="userLockerModal" tabindex="-1" aria-labelledby="lockerModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="lockerModalLabel">Danh sách tủ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="locker-list-content">Đang tải...</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -354,6 +418,36 @@
                 }
             });
         });
+
+        document.getElementById('userLockerModal').addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-user-id');
+            var userName = button.getAttribute('data-user-name');
+            var modal = this;
+
+            modal.querySelector('.modal-title').innerText = 'Danh sách tủ của ' + userName;
+            var contentDiv = modal.querySelector('#locker-list-content');
+            contentDiv.innerHTML = 'Đang tải...';
+
+            fetch('/api/users/' + userId + '/lockers/')
+              .then(res => res.json())
+              .then(data => {
+                if(data.success && data.lockers.length > 0) {
+                  let html = '<ul>';
+                  data.lockers.forEach(l => {
+                    html += `<li>Khu: ${l.board_id} | Tủ: ${l.lock_id}</li>`;
+                  });
+                  html += '</ul>';
+                  contentDiv.innerHTML = html;
+                } else {
+                  contentDiv.innerHTML = '<span>Chưa có tủ nào được đăng ký.</span>';
+                }
+              })
+              .catch(() => {
+                contentDiv.innerHTML = '<span class="text-danger">Không lấy được dữ liệu.</span>';
+              });
+        });
+
     </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Dashboard - FaceID Locker{% endblock %}
+{% block title %}Khóa tủ - FaceID Locker{% endblock %}
 
-{% block page_title %}Lockers{% endblock %}
+{% block page_title %}Khóa tủ{% endblock %}
 
 {% block content %}
 <!DOCTYPE html>
@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lockers - FaceID Locker Management System</title>
+    <title>Khóa tủ - FaceID Locker Management System</title>
     <script src="https://cdn.tailwindcss.com">
 </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -50,7 +50,7 @@
                 <!-- Action Buttons -->
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center space-x-2 mb-4">
-                        <label for="boardSelect" class="font-medium">Select Board:</label>
+                        <label for="boardSelect" class="font-medium">Chọn khu:</label>
                         <select id="boardSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <!-- Options will be loaded by JS -->
                         </select>
@@ -62,51 +62,6 @@
         </div>
     </div>
     <script>
-        let isEditMode = false;
-        let currentEditCard = null;
-
-        function openAddModal() {
-            isEditMode = false;
-            document.getElementById('modalTitle').textContent = 'Add New Locker';
-            document.getElementById('lockerForm').reset();
-            document.getElementById('lockerModal').classList.remove('hidden');
-        }
-
-        function editLocker(button) {
-            isEditMode = true;
-            currentEditCard = button.closest('.locker-card');
-            
-            const lockerNumber = currentEditCard.querySelector('h3').textContent.replace('Locker #', '');
-            const location = currentEditCard.querySelector('p').textContent.replace('Location: ', '');
-            const type = currentEditCard.querySelectorAll('p')[1].textContent.replace('Type: ', '');
-            
-            
-            document.getElementById('modalTitle').textContent = 'Edit Locker';
-            document.getElementById('lockerNumber').value = lockerNumber;
-            document.getElementById('lockerLocation').value = location;
-            document.getElementById('lockerType').value = type;
-            
-            
-            document.getElementById('lockerModal').classList.remove('hidden');
-            hideAllMenus();
-        }
-
-        function deleteLocker(button) {
-            const card = button.closest('.locker-card');
-            const lockerNumber = card.querySelector('h3').textContent;
-            
-            if (confirm(`Are you sure you want to delete ${lockerNumber}?`)) {
-                card.remove();
-                hideAllMenus();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('lockerModal').classList.add('hidden');
-            isEditMode = false;
-            currentEditCard = null;
-        }
-
         function saveLocker(e) {
             e.preventDefault();
             
@@ -168,10 +123,10 @@
                             <i class="fas ${iconColors[data.status].split(' ')[2]} ${iconColors[data.status].split(' ')[1]}"></i>
                         </div>
                     </div>
-                    <h3 class="font-semibold text-lg mb-2">Locker #${data.number}</h3>
+                    <h3 class="font-semibold text-lg mb-2">Tủ #${data.number}</h3>
                     <div class="flex items-center justify-between">
                         
-                        <span class="${statusColors[data.status]} text-xs px-2 py-1 rounded-full">${data.status === 'registered' ? 'User: #' + data.userId: 'unregistered'}</span>
+                        <span class="${statusColors[data.status]} text-xs px-2 py-1 rounded-full">${data.status === 'registered' ? 'Người dùng: #' + data.userId: 'Chưa đăng ký'}</span>
                     </div>
                 </div>
             `;
@@ -218,7 +173,7 @@ function loadBoards() {
             if (data.success) {
                 const boards = [...new Set(data.lockers.map(locker => locker.board_id))];
                 const select = document.getElementById('boardSelect');
-                select.innerHTML = boards.map(b => `<option value="${b}">Board ${b}</option>`).join('');
+                select.innerHTML = boards.map(b => `<option value="${b}">Khu ${b}</option>`).join('');
                 if (boards.length > 0) {
                     select.value = boards[0];
                     loadLockersByBoard(boards[0]);

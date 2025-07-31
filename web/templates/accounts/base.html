@@ -212,7 +212,7 @@
             <li class="nav-item">
                 <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Bảng điều khiển</span>
                 </a>
             </li>
             
@@ -220,23 +220,23 @@
             <li class="nav-item">
                 <a href="#" class="nav-link" data-toggle="submenu">
                     <i class="fas fa-cogs"></i>
-                    <span>Management</span>
+                    <span>Quản lý</span>
                     <i class="fas fa-chevron-down ms-auto"></i>
                 </a>
                 <ul class="submenu {% if 'management' in request.resolver_match.url_name %}show{% endif %}">
                     <li>
                         <a href="{% url 'lockers' %}" class="nav-link {% if request.resolver_match.url_name == 'lockers' %}active{% endif %}">
-                            Lockers
+                            Khóa tủ
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'usage_history' %}" class="nav-link {% if request.resolver_match.url_name == 'usage_history' %}active{% endif %}">
-                            Usage History
+                            Lịch sử sử dụng
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'user_information' %}" class="nav-link {% if request.resolver_match.url_name == 'user_information' %}active{% endif %}">
-                            User Information
+                            Thông tin người dùng
                         </a>
                     </li>
                     <li>
@@ -251,13 +251,13 @@
             <li class="nav-item">
                 <a href="#" class="nav-link" data-toggle="submenu">
                     <i class="fas fa-shield-alt"></i>
-                    <span>Security</span>
+                    <span>Bảo mật</span>
                     <i class="fas fa-chevron-down ms-auto"></i>
                 </a>
                 <ul class="submenu {% if 'security' in request.resolver_match.url_name %}show{% endif %}">
                     <li>
                         <a href="{% url 'change_password' %}" class="nav-link {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
-                            Change Admin Password
+                            Thay đổi mật khẩu API
                         </a>
                     </li>
                 </ul>
@@ -282,12 +282,6 @@
         <!-- Content Header -->
         <div class="content-header">
             <h1>{% block page_title %}Dashboard{% endblock %}</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    {% block breadcrumb %}{% endblock %}
-                </ol>
-            </nav>
         </div>
 
         <!-- Page Content -->

@@ -52,5 +52,6 @@ urlpatterns = [
     path('api/usage_history/', views.api_usage_history, name='api_usage_history'),
     path('api/get_lockers_by_board/', views.api_get_lockers_by_board, name='api_get_lockers_by_board'),
     path('api/all_log/', views.api_all_log, name='api_all_log'),
+    path('api/users/<int:user_id>/lockers/', views.api_user_lockers_json, name='api_user_lockers_json'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

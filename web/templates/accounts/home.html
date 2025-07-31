@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html' %}
 {% block title %}Dashboard - FaceID Locker{% endblock %}
 
-{% block page_title %}Dashboard{% endblock %}
+{% block page_title %}Bảng điều khiển{% endblock %}
 {% comment %}
     This is a Django template.
     It can be placed in `accounts/templates/accounts/home.html`
@@ -91,7 +91,7 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Total Lockers</p>
+                                <p class="text-gray-500 text-sm">Tổng số khóa đã sử dụng</p>
                                 <h3 class="text-2xl font-bold">{{ total_lockers }}</h3>
                             </div>
                             <div class="bg-blue-100 p-3 rounded-full">
@@ -103,7 +103,7 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Registered Users</p>
+                                <p class="text-gray-500 text-sm">Số người dùng</p>
                                 <h3 class="text-2xl font-bold">{{ registered_users }}</h3>
                             </div>
                             <div class="bg-green-100 p-3 rounded-full">
@@ -115,7 +115,7 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Today's Usage</p>
+                                <p class="text-gray-500 text-sm">Hoạt động hôm nay</p>
                                 <h3 class="text-2xl font-bold">{{ todays_usage }}</h3> 
                             </div>
                             <div class="bg-yellow-100 p-3 rounded-full">
@@ -127,7 +127,7 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Security Alerts</p>
+                                <p class="text-gray-500 text-sm">Cảnh báo bảo mật</p>
                                 <h3 class="text-2xl font-bold">{{ security_alerts_count }}</h3>
                             </div>
                             <div class="bg-red-100 p-3 rounded-full">
@@ -140,7 +140,7 @@
                     <!-- Add above the recent activity list -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                            <h3 class="text-lg font-semibold mb-4">Hoạt động gần đây</h3>
                             <button id="btn-recent-activity-seen" class="bg-green-100 text-green-1500 text-xs px-2 py-1 rounded-full">Đã đọc</button>
                         </div>
                         <div class="space-y-4 recent-activity-list">
@@ -156,7 +156,7 @@
                                 </div>
                             </div>
                             {% empty %}
-                            <div class="text-gray-400">No Recent Activity.</div>
+                            <div class="text-gray-400">Không có hoạt động gần đây.</div>
                             {% endfor %}
                         </div>
                     </div>
@@ -164,7 +164,7 @@
 
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Security Alerts</h3>
+                        <h3 class="text-lg font-semibold">Cảnh báo bảo mật</h3>
                         <button id="btn-security-alerts-seen" class="bg-red-100 text-red-1500 text-xs px-2 py-1 rounded-full">Đã đọc</button>
                     </div>
 
@@ -172,10 +172,10 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date/Time</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Board</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locker</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tủ</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sự kiện</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -187,7 +187,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{{ alert.details }}</td>
                                     </tr>
                                 {% empty %}
-                                <tr><td colspan="4" class="text-gray-400">No Security Alerts.</td></tr>
+                                <tr><td colspan="4" class="text-gray-400">Không có cảnh báo bảo mật.</td></tr>
                                 {% endfor %}
                                 <!--
                                 <tr>

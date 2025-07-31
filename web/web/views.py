@@ -17,6 +17,7 @@ from . import settings
 from . import function
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 import os
 @login_required
 def home_dashboard(request):
@@ -556,3 +557,23 @@ def api_toggle_user_status(request):
         return JsonResponse({'success': True, 'new_status': user.status})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+def api_user_lockers_json(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    lockers = Lock.objects.filter(user=user).order_by('board_id', 'lock_id')
+    data = [
+        {
+            'board_id': locker.board_id,
+            'lock_id': locker.lock_id,
+        }
+        for locker in lockers
+    ]
+    return JsonResponse({
+        'success': True,
+        'user': {
+            'id': user.id,
+            'name': user.name,
+        },
+        'lockers': data,
+    })
