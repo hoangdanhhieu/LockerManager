@@ -17,14 +17,16 @@ from . import settings
 from . import function
 from django.core.paginator import Paginator
 from django.db.models import Q
+import os
 @login_required
 def home_dashboard(request):
+    green_activities = [1, 7, 10]
     recent_activities = (
-        Log.objects.select_related("locker", "locker__user")
-        .filter(code__in=[0, 1, 2, 3, 5, 6], mark = False)
+        Log.objects.select_related("user")
+        .filter(code__in=[0, 1, 2, 3, 5, 6, 7, 10, 11], mark = False)
         .order_by("-at_time")
     )
-
+    print(recent_activities)
     security_alerts_qs = (
         Log.objects.filter(code__in = [4], mark = False)
         .select_related("locker")
@@ -49,6 +51,8 @@ def home_dashboard(request):
         "recent_activities":  recent_activities,
         "security_alerts":    security_alerts_with_lockinfo,
         "security_alerts_count": len(security_alerts_with_lockinfo),
+        "green_activities":   green_activities,
+        
     }
 
     return render(request, 'accounts/home.html', context)
@@ -84,7 +88,7 @@ def user_information(request):
         user_image = UserImage.objects.filter(user = user).first()
         image_url = reverse('get_user_image', args = [user.id])
         # Get last access time from Log (assuming code=1 or 2 means access)
-        last_log = Log.objects.filter(locker__user = user, code__in=[1,2]).order_by('-at_time').first()
+        last_log = Log.objects.filter(locker__user = user, code__in=[1, 2, 3, 4, 10, 11]).order_by('-at_time').first()
         last_access = last_log.at_time if last_log else user.RegTime
         user_data.append({
             'id': user.id,
@@ -128,10 +132,12 @@ def api_user_register(request):
     if request.method == 'POST':
         try:
             #data = json.loads(request.body.decode('utf-8'))
+            id = int(request.POST.get("id"))
             name = str(request.POST.get("name"))
             status = int(request.POST.get("status"))
             passwd = str(request.POST.get("passwd_lock_admin"))
             image_file = request.FILES.get("image")
+            lock = json.loads(request.POST.get("cabinets"))
             if(len(name) == 0 or not image_file):
                 raise ValueError("Name and image are required fields")
         except Exception as e:
@@ -142,33 +148,59 @@ def api_user_register(request):
             return JsonResponse({'error': 'Admin password not set'}, status=404)
         if not check_password(passwd, admin.password):
             return JsonResponse({'success': False, 'error': 'Invalid password'})
-        # Lưu vào database
+
         try:
-            new_user = User(name = name, status = status)
-            new_user.save()
-            new_user_id = new_user.id
-            function.write_log(10, user_id = new_user_id)
-            img = Image.objects.create(title=f"image_user_{new_user_id}", image = image_file)
-            UserImage.objects.update_or_create(user = new_user, defaults = {'image': img})
-            return JsonResponse({'message': 'Data saved successfully'})
+            # Update or save user
+            if User.objects.filter(id = id).exists():
+                user = User.objects.get(id = id)
+                user.name = name
+                user.status = status
+                user.save()
+                function.write_log(7, user_id = id)
+            else:
+                new_user = User(id = id, name = name, status = status)
+                new_user.save()
+                new_user_id = new_user.id
+                function.write_log(10, user_id = new_user_id)
+
+            user = User.objects.get(id = id)
+            old_user_images = UserImage.objects.filter(user = user)
+            for user_image in old_user_images:
+                if user_image.image:
+                    os.remove(user_image.image.image.path)  # Xóa file trên hệ thống
+                    user_image.image.image.delete(save=False)
+                    user_image.image.delete()  # Xóa file trên storage và đối tượng Image
+                user_image.delete()
+
+            img = Image.objects.create(title=f"image_user_{id}", image = image_file)
+            UserImage.objects.update_or_create(user = user, defaults = {'image': img})
+            # Process lockers
+            for locker in lock:
+                board_id = int(locker['khu'])
+                lock_id = int(locker['cabinetId'].split(' ')[-1])
+                existing_lock = Lock.objects.get(board_id=board_id, lock_id=lock_id)
+                existing_lock.user = user
+                existing_lock.save()
+            return JsonResponse({'message': 'Data saved successfully', 'user_id': id}, status = 201)
         except Exception as e:
             return JsonResponse({'error': f'Database save failed: {str(e)}'}, status = 500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status = 405)
 
+
+
 @login_required
 def api_edit_user(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        user_id = data.get('id')
+        user_id = int(data.get('id'))
         name = data.get('name')
         sdt = data.get('sdt')
         status = int(data.get('status'))
 
         # Check if sdt exists for another user
         if User.objects.filter(sdt = sdt).exclude(id = user_id).exists():
-            return JsonResponse({'success': False, 'error': 'Phone number already exists for another user.'}, status=400)
-
+            return JsonResponse({'success': False, 'error': 'Phone number already exists for another user.'}, status = 400)
         user = User.objects.get(id=user_id)
         user.name = name
         user.sdt = sdt
@@ -295,11 +327,11 @@ def api_write_log(request):
     if request.method == 'POST':
         try:
             passwd_lock_admin = request.POST.get("passwd_lock_admin")
-            code = request.POST.get("code")
+            code = int(request.POST.get("code"))
             details = request.POST.get("details", "")
             locker_id = request.POST.get("locker_id", None)
             board_id = request.POST.get("board_id", None)
-            if not passwd_lock_admin or code is None or not code.isdigit():
+            if not passwd_lock_admin or code is None:
                 return JsonResponse({'error': 'Missing required fields'}, status = 400)
             admin = AdminLock.objects.first()
             if not admin or not check_password(passwd_lock_admin, admin.password):
@@ -311,8 +343,11 @@ def api_write_log(request):
                     return JsonResponse({'error': 'Locker not found'}, status = 404)
                 locker_id = int(locker_id)
                 board_id = int(board_id)
+            if(locker and not locker.user):
+                return JsonResponse({'error': 'User not found'}, status = 404)
+            user_id = int(locker.user.id)
             code = int(code)
-            return function.write_log(code, details, locker)
+            return function.write_log(code, details, locker, user_id)
         except Exception as e:
             return JsonResponse({'error': f'Failed to write log: {str(e)}'}, status=400)
     else:
@@ -335,18 +370,32 @@ def api_mark_security_alerts_seen(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 
-@login_required
+@csrf_exempt
 def api_delete_user(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body.decode('utf-8'))
-            user_id = data.get('user_id')
+            passwd_lock_admin = request.POST.get("passwd_lock_admin")
+            user_id = int(request.POST.get('id'))
+            if not passwd_lock_admin:
+                return JsonResponse({'error': 'Missing required fields'}, status = 400)
+            admin = AdminLock.objects.first()
+            if not admin:
+                return JsonResponse({'error': 'Admin password not set'}, status=404)
+            if not check_password(passwd_lock_admin, admin.password):
+                return JsonResponse({'error': 'Invalid admin password'}, status = 403)
             user = User.objects.filter(id = user_id).first()
+            old_user_images = UserImage.objects.filter(user = user)
+            for user_image in old_user_images:
+                if user_image.image:
+                    os.remove(user_image.image.image.path)  # Xóa file trên hệ thống
+                    user_image.image.image.delete(save=False)
+                    user_image.image.delete()  # Xóa file trên storage và đối tượng Image
+                user_image.delete()
             if not user:
                 return JsonResponse({'success': False, 'error': 'User not found'}, status = 404)
             user.delete()
             function.write_log(9, user_id = user_id)
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True}, status = 201)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status = 400)
     else:
@@ -367,7 +416,7 @@ def api_get_user_list(request):
                 {'userid': u['id'], 'name': u['name'], 'status': u['status']}
                 for u in users
             ]
-            return JsonResponse({'success': True, 'users': user_list})
+            return JsonResponse({'success': True, 'users': user_list}, status = 201)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
     else:
@@ -480,9 +529,10 @@ def api_all_log(request):
                 'id': log.id,
                 'details': log.details,
                 'date_time': log.at_time.strftime('%Y-%m-%d %H:%M'),
-                'user': f'User #{log.locker.user.id} {log.locker.user.name}' if log.locker and log.locker.user else '',
+                'user': f'#{log.user.id} {log.user.name}' if log.user and log.user else '',
                 'board': f'#{log.locker.board_id:02d}' if log.locker else '',
-                'locker': f'#{log.locker.lock_id:03d}' if log.locker else '',
+                'locker': f'#{log.locker.lock_id:02d}' if log.locker else '',
+                'sdt': log.user.sdt,
             })
         return JsonResponse({
             'success': True,

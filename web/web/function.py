@@ -2,13 +2,15 @@ from lockers.models import Lock, User, Log, UserImage, AdminLock, Image
 from django.http import JsonResponse
 from . import define
 def write_log(code, details = "", locker = None, user_id = None):
+    user = None
     try:
         if (code == 0):
             pass
         elif(code == 1):
             if not locker:
                 return JsonResponse({'error': 'Locker ID is required for code 1'}, status=400)
-            details = define.msg[1] % (locker.lock_id, locker.board_id)
+            user = User.objects.get(id = user_id)
+            details = define.msg[1] % (user_id, locker.lock_id, locker.board_id)
         elif(code == 2):
             if not locker:
                 return JsonResponse({'error': 'Locker ID is required for code 2'}, status=400)
@@ -22,6 +24,7 @@ def write_log(code, details = "", locker = None, user_id = None):
         elif(code == 4):
             if not locker:
                 return JsonResponse({'error': 'Locker ID is required for code 4'}, status=400)
+            user = User.objects.get(id = user_id)
             details = define.msg[4]
         elif(code == 5):
             details = define.msg[5]
@@ -30,6 +33,7 @@ def write_log(code, details = "", locker = None, user_id = None):
         elif(code == 7):
             if not user_id:
                 return JsonResponse({'error': 'User ID is required for code 7'}, status=400)
+            user = User.objects.get(id = user_id)
             details = define.msg[7] % user_id
         elif(code == 8):
             if not user_id:
@@ -38,15 +42,25 @@ def write_log(code, details = "", locker = None, user_id = None):
         elif(code == 9):
             if not user_id:
                 return JsonResponse({'error': 'User ID is required for code 9'}, status=400)
+            user = User.objects.get(id = user_id)
             details = define.msg[9] % user_id
         elif(code == 10):
             if not user_id:
                 return JsonResponse({'error': 'User ID is required for code 10'}, status=400)
+            user = User.objects.get(id = user_id)
             details = define.msg[10] % user_id
+        elif(code == 11):
+            if not user_id:
+                return JsonResponse({'error': 'User ID is required for code 10'}, status = 400)
+            user = User.objects.get(id = user_id)
+            details = define.msg[11] % (locker.lock_id, locker.board_id)
         else:
             return JsonResponse({'error': 'Invalid code'}, status=400)
+
+
         log = Log.objects.create(
             code = code,
+            user = user,
             details = details,
             locker = locker,
             mark = False,

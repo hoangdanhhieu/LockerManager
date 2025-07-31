@@ -147,8 +147,8 @@
                             {% for activity in recent_activities %}
                             <div class="flex items-start activity-item">
                                 <div class="p-2 rounded-full mr-3
-                                    {% if activity.code == 1 %} bg-green-100 {% else %} bg-red-100 {% endif %}">
-                                    <i class="fas {% if activity.code == 1 %} fa-check text-green-500 {% else %} fa-exclamation text-red-500 {% endif %}"></i>
+                                    {% if activity.code in green_activities %} bg-green-100 {% else %} bg-red-100 {% endif %}">
+                                    <i class="fas fa-fw fa-lg {% if activity.code in green_activities %} fa-check text-green-500 {% else %} fa-exclamation text-red-500 {% endif %}"></i>
                                 </div>
                                 <div>
                                     <p class="font-medium">{{ activity.details }}</p>

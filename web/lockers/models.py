@@ -66,6 +66,14 @@ class Log(models.Model):
         db_column='LockerID'
     )
 
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,  # hoặc CASCADE tùy bạn
+        null=True,
+        blank=True,
+        db_column='UserID'
+    )
+    
     class Meta:
         db_table = 'Log'
         ordering = ['-at_time']

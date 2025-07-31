@@ -67,11 +67,32 @@ def get_user_list():
     print(response.json())
 
 def reg_user():
+    #url = "https://nonamezz.pythonanywhere.com/api/register_user"
     url = "http://127.0.0.1:8000/api/register_user"
     files = {
         "image": open("/home/nonamezz/Downloads/cow.jpeg", "rb")
     }
-    data = {"passwd_lock_admin": "Hoanghieu.2702", "name": "Anh Da Den", "status": 1}
+    data = {"id": 10, "passwd_lock_admin": "Hoanghieu.2702", "name": "Anh Da Den", "status": 1}
     response = requests.post(url, data=data, files = files)
     print(response.json())
-reg_user()
+
+def del_user():
+    #url = "https://nonamezz.pythonanywhere.com/api/register_user"
+    url = "http://127.0.0.1:8000/api/delete_user/"
+    data = {"id": 1, "passwd_lock_admin": "Hoanghieu.2702"}
+    response = requests.post(url, data=data)
+    print(response.json())
+
+
+def openlockLog():
+    url = "http://127.0.0.1:8000/api/write_log/"
+    data = {"code": 1, "locker_id": 5, "board_id": 1, "passwd_lock_admin": "Hoanghieu.2702"}
+    response = requests.post(url, data=data)
+    print(response.json())
+
+def getuserstatus():
+    url = "http://127.0.0.1:8000/api/get_user_list/"
+    data = {"passwd_lock_admin": "Hoanghieu.2702"}
+    response = requests.post(url, data=data)
+    print(response.json())
+getuserstatus()
