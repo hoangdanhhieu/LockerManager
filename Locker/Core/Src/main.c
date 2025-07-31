@@ -108,6 +108,7 @@ int main(void) {
 			GPIO_PIN_SET);
 	readAddress();
 	HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buff, 30);
+	uint8_t last_enALL = 1;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -149,11 +150,19 @@ int main(void) {
 			rusc3_func();
 			break;
 		default:
+<<<<<<< Updated upstream
 			uint8_t curr_en_button = HAL_GPIO_ReadPin(GPIOC, EN_ALL_Pin);
 			if (curr_en_button == 0 && last_en_button == 1) {
 				unlock_all();
 			}
 			last_en_button = curr_en_button;
+=======
+			uint8_t curr_enALL = HAL_GPIO_ReadPin(GPIOC, EN_ALL_Pin);
+			if (curr_enALL == 0 && last_enALL == 1) {
+				unlock_all();
+			}
+			last_enALL = curr_enALL;
+>>>>>>> Stashed changes
 			continue;
 		}
 		memset(rx_buff, 0, sizeof(rx_buff));
