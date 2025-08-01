@@ -1,0 +1,454 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Dashboard - FaceID Locker{% endblock %}
+
+{% block page_title %}User Information{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Information - FaceID Locker Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-40px) scale(0.98);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+}
+.modal-animate {
+    animation: fadeInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#locker-list-content {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 8px;
+    background: #f4f8fc;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+#locker-list-content li {
+    padding: 12px 20px;
+    margin: 0;
+    border-bottom: 1px solid #e6e9ef;
+    font-size: 17px;
+    color: #333;
+    position: relative;
+    transition: background 0.2s;
+}
+
+#locker-list-content li:last-child {
+    border-bottom: none;
+}
+
+#locker-list-content li::before {
+    content: "🔒";
+    margin-right: 12px;
+    color: #1976d2;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+#locker-list-content li:hover {
+    background: #e3f1fb;
+}
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Content -->
+            <main class="p-6">
+                <!-- Search and Actions -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <input type="text" id="searchUser" placeholder="Search users..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Access</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                            {% for user in users %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-12 rounded-full" src="{{ user.image_url }}" alt="{{ user.name }}">
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                                                <div class="text-sm text-gray-500">{{ user.sdt }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.reg_time|date:"Y-m-d" }}</td>  
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.last_access|date:"Y-m-d H:i" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if user.status %}
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                                        {% else %}
+                                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Inactive</span>
+                                        {% endif %}
+                                        
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <div class="flex space-x-2">
+                                            <button onclick="editUser({{ user.id }})" class="text-green-600 hover:text-green-900">Edit</button>
+                                            {% if user.status %}
+                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-red-600 hover:text-red-900">Suspend</button>
+                                            {% else %}
+                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-blue-600 hover:text-blue-900">Activate</button>
+                                            {% endif %}
+                                            <button 
+                                                type="button"
+                                                class="text-green-600 hover:text-green-900"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#userLockerModal"
+                                                data-user-id="{{ user.id }}"
+                                                data-user-name="{{ user.name }}">
+                                                Xem tủ
+                                            </button>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+     {% csrf_token %}
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md" id="userModalContent">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="userModalTitle" class="text-lg font-semibold">Add New User</h3>
+                <button onclick="closeUserModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="userForm" novalidate>
+                <input type="hidden" id="userId" name="id" value="">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
+                    <input type="text" id="name" name = "name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
+                    <input type="text" id="sdt" name = "sdt" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Status</label>
+                    <select id="userStatus" name = "status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Save User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="userLockerModal" tabindex="-1" aria-labelledby="lockerModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="lockerModalLabel">Danh sách tủ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="locker-list-content">Đang tải...</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        
+        // start open form add User 
+        function openAddUserModal() {
+            document.getElementById('userModalTitle').textContent = 'Add New User';
+            document.getElementById('userForm').reset();
+            document.getElementById('userModal').classList.remove('hidden');
+            const modalContent = document.getElementById('userModalContent');
+            modalContent.classList.remove('modal-animate'); // reset
+            void modalContent.offsetWidth; // trigger reflow
+            modalContent.classList.add('modal-animate');
+        }
+
+        function editUser(userId) {
+            const row = document.querySelector(`button[onclick="editUser(${userId})"]`).closest('tr');
+            document.getElementById('userModalTitle').textContent = 'Edit User';
+            document.getElementById('userId').value = userId;
+            document.getElementById('name').value = row.querySelector('td:nth-child(1) .text-sm.font-medium').textContent.trim();
+            document.getElementById('sdt').value = row.querySelector('td:nth-child(1) .text-sm.text-gray-500').textContent.trim();
+            document.getElementById('userStatus').value = row.querySelector('td:nth-child(5) span').textContent.trim() === 'Active' ? '1' : '0';
+            document.getElementById('userModal').classList.remove('hidden');
+            const modalContent = document.getElementById('userModalContent');
+            modalContent.classList.remove('modal-animate'); // reset
+            void modalContent.offsetWidth; // trigger reflow
+            modalContent.classList.add('modal-animate');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.add('hidden');
+        }
+        // end open form add User
+
+
+        // start submit form add User
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userId = document.getElementById('userId').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('sdt').value;
+            const status = document.getElementById('userStatus').value;
+        
+            const nameResult = validateName(name);
+            const phoneResult = validatePhone(phone);
+        
+            if (nameResult.isValid && phoneResult.isValid) {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const url = '/api/edit_user/';
+                const payload = JSON.stringify({ id: userId, name: name, sdt: phone, status: status });
+            
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: payload
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error || data.success === false) {
+                        alert(`Error: ${data.error}`);
+                    } else {
+                        alert('User updated successfully!');
+                        location.reload(true);
+                    }
+                });
+            } else {
+                let log = '';
+                if(!nameResult.isValid){
+                    log += (nameResult.message);
+                }
+                if(!phoneResult.isValid){
+                    log += ('\n' + phoneResult.message);
+                }
+                alert(log);
+            }
+        });
+
+        // Hàm kiểm tra tên
+        function validateName(name) {
+            // Regex cho tên tiếng Việt (có dấu)
+            const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸưăạảấầẩẫậắằẳẵặẹẻẽềểễệ ỉịọỏốồổỗộớờởỡợụủứừửữựỳỵýỷỹ\s]{2,50}$/;
+        
+            if (!name || name.trim() === '') {
+                return { isValid: false, message: 'Vui lòng nhập họ tên' };
+            }
+            
+            if (name.trim().length < 2) {
+                return { isValid: false, message: 'Tên phải có ít nhất 2 ký tự' };
+            }
+            
+            if (name.trim().length > 50) {
+                return { isValid: false, message: 'Tên không được vượt quá 50 ký tự' };
+            }
+            
+            if (!nameRegex.test(name.trim())) {
+                return { isValid: false, message: 'Tên chỉ được chứa chữ cái và khoảng trắng' };
+            }
+            return { isValid: true, message: 'Tên hợp lệ' };
+        }
+
+        function validatePhone(phone) {
+            const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+            
+            if (!phone || phone.trim() === '') {
+                return { isValid: false, message: 'Vui lòng nhập số điện thoại' };
+            }
+            
+            // Loại bỏ khoảng trắng và ký tự đặc biệt
+            const cleanPhone = phone.replace(/[\s\-\+\(\)]/g, '');
+            
+            if (!phoneRegex.test(cleanPhone)) {
+                return { isValid: false, message: 'Số điện thoại không đúng định dạng (VD: 0912345678)' };
+            }
+            
+            return { isValid: true, message: 'Số điện thoại hợp lệ' };
+        }
+        
+        // Hàm hiển thị lỗi
+        function showError(elementId, message, isValid) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.color = isValid ? 'green' : 'red';
+        }
+        
+        // Kiểm tra real-time khi người dùng nhập
+        document.getElementById('name').addEventListener('input', function() {
+            const result = validateName(this.value);
+            //showError('nameError', result.message, result.isValid);
+        });
+        
+        document.getElementById('sdt').addEventListener('input', function() {
+            const result = validatePhone(this.value);
+            //showError('phoneError', result.message, result.isValid);
+        });
+
+        function toggleUserStatus(userId) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch('/api/toggle_user_status/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User status updated!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        }
+
+        document.getElementById('searchUser').addEventListener('input', function() {
+        const searchValue = this.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+                const name = row.querySelector('td .text-sm.font-medium').textContent.toLowerCase();
+                const sdt = row.querySelector('td .text-sm.text-gray-500').textContent.toLowerCase();
+                if (name.includes(searchValue) || sdt.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            const filterValue = this.value;
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const statusText = row.querySelector('td:nth-child(5) span').textContent.trim().toLowerCase();
+                if (
+                    filterValue === 'all' ||
+                    (filterValue === 'active' && statusText === 'active') ||
+                    (filterValue === 'inactive' && statusText === 'inactive')
+                ) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('userLockerModal').addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-user-id');
+            var userName = button.getAttribute('data-user-name');
+            var modal = this;
+
+            modal.querySelector('.modal-title').innerText = 'Danh sách tủ của ' + userName;
+            var contentDiv = modal.querySelector('#locker-list-content');
+            contentDiv.innerHTML = 'Đang tải...';
+
+            fetch('/api/users/' + userId + '/lockers/')
+              .then(res => res.json())
+              .then(data => {
+                if(data.success && data.lockers.length > 0) {
+                  let html = '<ul>';
+                  data.lockers.forEach(l => {
+                    html += `<li>Khu: ${l.board_id} | Tủ: ${l.lock_id}</li>`;
+                  });
+                  html += '</ul>';
+                  contentDiv.innerHTML = html;
+                } else {
+                  contentDiv.innerHTML = '<span>Chưa có tủ nào được đăng ký.</span>';
+                }
+              })
+              .catch(() => {
+                contentDiv.innerHTML = '<span class="text-danger">Không lấy được dữ liệu.</span>';
+              });
+        });
+
+    </script>
+</body>
+</html>
+{% endblock %}

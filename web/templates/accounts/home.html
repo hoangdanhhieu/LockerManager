@@ -1,0 +1,387 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Dashboard - FaceID Locker{% endblock %}
+
+{% block page_title %}Bảng điều khiển{% endblock %}
+{% comment %}
+    This is a Django template.
+    It can be placed in `accounts/templates/accounts/home.html`
+    and rendered by a Django view.
+{% endcomment %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceID Locker Management System</title>
+    {# External CDN links are fine as is, Django doesn't need to process them #}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Your custom CSS here */
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .locker {
+            transition: all 0.2s ease;
+        }
+        .locker:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            height: 300px;
+        }
+
+        .recent-activity-list {
+          max-height: 300px; /* hoặc giá trị phù hợp với layout của bạn */
+          overflow-y: auto;
+          padding: 0.5em;
+        }
+        .activity-item {
+          margin-bottom: 8px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid #f3f3f3;
+        }
+
+        .security-alerts-wrapper {
+            max-height: 300px; 
+            overflow-y: auto;
+            }
+        
+        .security-alerts-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            }
+        
+        .security-alerts-wrapper th,
+            .security-alerts-wrapper td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f3f3f3;
+        }
+        
+        .security-alerts-wrapper thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1;
+        }
+
+        .animated-update {
+          animation: highlight-update 0.8s;
+        }
+
+        @keyframes highlight-update {
+          0%    { background: #ffe066; }
+          70%   { background: #ffe066; }
+          100%  { background: transparent; }
+        }
+
+        /* Animation cho bảng (row mới/updated) */
+        .animated-row {
+          animation: rowFlash 1s;
+        }
+
+        @keyframes rowFlash {
+          from { background-color: #cacc5fff; }
+          to   { background-color: transparent; }
+        }
+
+        .animated-row-red {
+          animation: rowFlash-red 1s;
+        }
+
+        @keyframes rowFlash-red {
+          from { background-color: #d8796cff; }
+          to   { background-color: transparent; }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    {% csrf_token %}
+        <div class="flex-1 overflow-auto">
+            <main class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Tổng số khóa đã sử dụng</p>
+                                <h3 class="text-2xl font-bold" id="total-lockers">--</h3>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fas fa-lock text-blue-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Số người dùng</p>
+                                <h3 class="text-2xl font-bold" id="registered-users">--</h3>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fas fa-users text-green-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Hoạt động hôm nay</p>
+                                <h3 class="text-2xl font-bold" id="todays-usage">--</h3> 
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-full">
+                                <i class="fas fa-history text-yellow-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Cảnh báo bảo mật</p>
+                                <h3 class="text-2xl font-bold" id="security-alerts-count">--</h3>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <i class="fas fa-exclamation-triangle text-red-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+                    <!-- Add above the recent activity list -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold mb-4">Hoạt động gần đây</h3>
+                            <button id="btn-recent-activity-seen" class="bg-green-100 text-green-1500 text-xs px-2 py-1 rounded-full">Đã đọc</button>
+                        </div>
+                        <div class="space-y-4 recent-activity-list" id = "recent-activities">
+                            <!--
+                            {% for activity in recent_activities %}
+                            <div class="flex items-start activity-item">
+                                <div class="p-2 rounded-full mr-3
+                                    {% if activity.code in green_activities %} bg-green-100 {% else %} bg-red-100 {% endif %}">
+                                    <i class="fas fa-fw fa-lg {% if activity.code in green_activities %} fa-check text-green-500 {% else %} fa-exclamation text-red-500 {% endif %}"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">{{ activity.details }}</p>
+                                    <p class="text-sm text-gray-500">{{ activity.at_time|date:"Y-m-d H:i" }}</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-gray-400"></div>
+                            {% endfor %}
+                            -->
+                            <div class="text-gray-400">Đang tải hoạt động gần đây...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Cảnh báo bảo mật</h3>
+                        <button id="btn-security-alerts-seen" class="bg-red-100 text-red-1500 text-xs px-2 py-1 rounded-full">Đã đọc</button>
+                    </div>
+
+                    <div class="overflow-x-auto security-alerts-wrapper">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tủ</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sự kiện</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id = "security-alerts">
+                                <!--
+                                {% for alert in security_alerts %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ alert.at_time|date:"Y-m-d H:i" }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ alert.board_id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ alert.lock_id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{{ alert.details }}</td>
+                                    </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-gray-400">Không có cảnh báo bảo mật.</td></tr>
+                                {% endfor %}
+                                -->
+                                <tr><td colspan="4" class="text-gray-400">Đang tải cảnh báo bảo mật...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Recent Activity
+        let old_activities = [];
+        function updateRecentActivities() {
+            fetch('/api/recent_activities/')
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    if (data.recent_activities && data.recent_activities.length) {
+                        data.recent_activities.forEach(item => {
+                            html += 
+                            `
+                            <div class="flex items-start activity-item ${!old_activities.includes(item.id) ? "animated-row" : ""}">
+                                <div class="p-2 rounded-full mr-3
+                                    ${item.type ? "bg-green-100" : "bg-red-100"}">
+                                    <i class="fas fa-fw fa-lg ${item.type ? "fa-check text-green-500" : "fa-exclamation text-red-500"}"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">${item.details}</p>
+                                    <p class="text-sm text-gray-500">${item.at_time}</p>
+                                </div>
+                            </div>
+                            `;
+                            if(!old_activities.includes(item.id)){
+                                old_activities.push(item.id)
+                            }
+                        });
+                    } else {
+                        html = "Không có hoạt động gần đây.";
+                    }
+                    document.getElementById('recent-activities').innerHTML = html;
+                    setTimeout(() => {
+                        document.querySelectorAll('#recent-activities .animated-row').forEach(row => {
+                            row.classList.remove('animated-row');
+                        });
+                    }, 1200);
+                })
+                .catch(error => {
+                    document.getElementById('recent-activities').innerHTML = "Lỗi tải dữ liệu.";
+                });
+        }
+
+        let old_alert = [];
+        function updateSecurityAlerts() {
+            fetch('/api/security_alerts/')
+                .then(response => response.json())
+                .then(data => {
+                    let html = "";
+                    if (data.security_alerts && data.security_alerts.length) {
+                        data.security_alerts.forEach(item => {
+                            html += `
+                                <tr class="${!old_alert.includes(item.id) ? "animated-row-red" : ""}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.at_time}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.board_id !== null ? item.board_id : ''}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.lock_id !== null ? item.lock_id : ''}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">${item.details}</td>
+                                </tr>
+                            `;
+                            if(!old_alert.includes(item.id)){
+                                old_alert.push(item.id)
+                            }
+                        });
+                    } else {
+                        html += `<tr><td colspan="4">Không có cảnh báo bảo mật.</td></tr>`;
+                    }
+                    document.getElementById('security-alerts').innerHTML = html;
+                    setTimeout(() => {
+                        document.querySelectorAll('#security-alerts .animated-row-red').forEach(row => {
+                            row.classList.remove('animated-row');
+                        });
+                    }, 1200);
+                })
+                .catch(error => {
+                    document.getElementById('security-alerts').innerHTML = "Lỗi tải dữ liệu.";
+                });
+        }
+
+        function animateUpdate(element) {
+            element.classList.remove('animated-update'); // reset nếu có
+            // Trigger reflow để đảm bảo animation chạy lại mỗi lần thay đổi
+            void element.offsetWidth;
+            element.classList.add('animated-update');
+        }
+        function updateDashboardStats() {
+            fetch('/api/dashboard_stats/')
+                .then(response => response.json())
+                .then(stats => {
+                    ['total-lockers', 'registered-users', 'todays-usage', 'security-alerts-count'].forEach(key => {
+                        const el = document.getElementById(key);
+                        if(el && String(el.textContent).trim() !== String(stats[key.replace(/-/g,'_')])) {
+                            el.textContent = stats[key.replace(/-/g,'_')];
+                            animateUpdate(el);
+                        }
+                    })
+                })
+                .catch(() => {
+                    // Bạn có thể báo lỗi hoặc giữ nguyên số cũ
+                });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRecentActivities();
+            updateSecurityAlerts();
+            updateDashboardStats();
+            setInterval(updateRecentActivities, 10000);
+            setInterval(updateSecurityAlerts, 10000);
+            setInterval(updateDashboardStats, 10000);
+        });
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        document.getElementById('btn-recent-activity-seen').addEventListener('click', function() {
+          fetch('/api/mark_recent_activity_seen/', {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'Accept': 'application/json',
+            },
+            credentials: 'same-origin'
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.success) {
+              alert('Đã đánh dấu hết recent activity là đã đọc!');
+              location.reload();
+            }
+          });
+        });
+
+        // Security Alerts
+        document.getElementById('btn-security-alerts-seen').addEventListener('click', function() {
+          fetch('/api/mark_security_alerts_seen/', {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'Accept': 'application/json',
+            },
+            credentials: 'same-origin'
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.success) {
+              alert('Đã đánh dấu hết security alerts là đã đọc!');
+              location.reload();
+            }
+          });
+        });
+
+
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Dashboard - FaceID Locker{% endblock %}
+
+{% block page_title %}Security Alerts{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Alerts - FaceID Locker Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Content -->
+            <main class="p-6">
+                <!-- Alert Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Critical Alerts</p>
+                                <h3 class="text-2xl font-bold text-red-600">3</h3>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <i class="fas fa-exclamation-triangle text-red-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts List -->
+                <div class="space-y-4">
+                    <!-- Critical Alert -->
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-red-100 p-2 rounded-full">
+                                    <i class="fas fa-exclamation-triangle text-red-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Unauthorized Access Attempt</h4>
+                                    <p class="text-gray-600 mt-1">Multiple failed FaceID attempts detected on Locker #008</p>
+                                    <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                        <span><i class="fas fa-clock mr-1"></i>2025-07-17 09:45 AM</span>
+                                        <span><i class="fas fa-map-marker-alt mr-1"></i>Locker #008</span>
+                                        <span><i class="fas fa-user mr-1"></i>Unknown User</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Critical</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">Open</span>
+                                <div class="relative">
+                                    <button onclick="toggleActionMenu(this)" class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="action-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Investigating</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Resolved</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleActionMenu(button) {
+            // Hide all other menus
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                if (menu !== button.nextElementSibling) {
+                    menu.classList.add('hidden');
+                }
+            });
+            
+            // Toggle current menu
+            const menu = button.nextElementSibling;
+            menu.classList.toggle('hidden');
+        }
+
+        function markAllAsRead() {
+            if (confirm('Mark all alerts as read?')) {
+                alert('All alerts marked as read');
+            }
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.action-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

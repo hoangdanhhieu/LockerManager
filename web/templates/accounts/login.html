@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login Page</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background: linear-gradient(45deg, #6b48ff, #00ddeb);
+                font-family: Arial, sans-serif;
+            }
+
+            .login-container {
+                text-align: center;
+                animation: slideDown 1s ease-out forwards;
+            }
+
+            .login-title {
+                font-size: 2.5em;
+                color: white;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .login-box {
+                background: rgba(255, 255, 255, 0.9);
+                padding: 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                width: 300px;
+            }
+
+            .input-group {
+                margin-bottom: 20px;
+                text-align: left;
+            }
+
+            /* Styles for the label rendered by Django's form field */
+            .input-group label {
+                display: block;
+                margin-bottom: 5px;
+                color: #333;
+                font-weight: bold;
+            }
+
+            /* Styles for the input rendered by Django's form field */
+            .input-group input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 1em;
+                outline: none;
+                transition: border-color 0.3s;
+                /* This is a webkit specific property, consider more standard 'width: 100%;' */
+                width: -webkit-fill-available;
+            }
+
+            .input-group input:focus {
+                border-color: #6b48ff;
+            }
+
+            button {
+                width: 100%;
+                padding: 10px;
+                background: #6b48ff;
+                border: none;
+                border-radius: 5px;
+                color: white;
+                font-size: 1em;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            button:hover {
+                background: #5438cc;
+            }
+
+            /* Style for Django form errors */
+            .errorlist {
+                color: red;
+                list-style-type: none;
+                padding: 0;
+                margin-top: 5px;
+                margin-bottom: 10px;
+            }
+
+            @keyframes slideDown {
+                0% {
+                    transform: translateY(-100vh);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <h1 class="login-title">Đăng nhập</h1>
+            <div class="login-box">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {# Display non-field errors (e.g., "Invalid credentials") #}
+                    {% if form.non_field_errors %}
+                        <ul class="errorlist">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <div class="input-group">
+                        {# Use id_for_label to correctly link label to input #}
+                        <label for="{{ form.username.id_for_label }}">Tài khoản</label>
+                        {# Render the username input field provided by Django's form #}
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="input-group">
+                        <label for="{{ form.password.id_for_label }}">Mật khẩu</label>
+                        {# Render the password input field provided by Django's form #}
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <button type="submit">Đăng nhập</button>
+                </form>
+            </div>
+        </div>
+        </body>
+</html>
