@@ -151,7 +151,7 @@ void unlock_func() {
 	tx_buff[3] = UNLOCK_CODE;
 	tx_buff[4] = 0x02;
 	tx_buff[5] = rx_buff[5];
-	rx_buff[6] = 0x01;
+	tx_buff[6] = 0x01;
 	tx_buff[7] = checksum(tx_buff, 7);
 	if (rx_buff[5] == 0) {
 		for (uint8_t i = 1; i <= MAX_CHANNEL; i++) {
@@ -379,11 +379,11 @@ void writePin(uint8_t PIN, uint8_t value) {
 }
 
 void readAddress() {
-	uint8_t D5 = 1 - HAL_GPIO_ReadPin(GPIOC, D1_Pin);
-	uint8_t D4 = 1 - HAL_GPIO_ReadPin(GPIOC, D2_Pin);
+	uint8_t D1 = 1 - HAL_GPIO_ReadPin(GPIOC, D1_Pin);
+	uint8_t D2 = 1 - HAL_GPIO_ReadPin(GPIOC, D2_Pin);
 	uint8_t D3 = 1 - HAL_GPIO_ReadPin(GPIOC, D3_Pin);
-	uint8_t D2 = 1 - HAL_GPIO_ReadPin(GPIOA, D4_Pin);
-	uint8_t D1 = 1 - HAL_GPIO_ReadPin(GPIOA, D5_Pin);
+	uint8_t D4 = 1 - HAL_GPIO_ReadPin(GPIOA, D4_Pin);
+	uint8_t D5 = 1 - HAL_GPIO_ReadPin(GPIOA, D5_Pin);
 	ADDRESS = 1 + ((D1 << 0) | (D2 << 1) | (D3 << 2) | (D4 << 3) | (D5 << 4));
 }
 
