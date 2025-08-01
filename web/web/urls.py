@@ -42,8 +42,8 @@ urlpatterns = [
     path('api/check_passwd_lock_admin', views.api_check_passwd_lock_admin, name='check_passwd_lock_admin'),
     path('api/toggle_user_status/', views.api_toggle_user_status, name='api_toggle_user_status'),
     path('api/edit_user/', views.api_edit_user, name='api_edit_user'),
-    path('api/update_user_vector/', views.api_update_user_vector, name='api_update_user_vector'),
-    path('api/get_user_vector/', views.api_get_user_vector, name='api_get_user_vector'),
+    #path('api/update_user_vector/', views.api_update_user_vector, name='api_update_user_vector'),
+    #path('api/get_user_vector/', views.api_get_user_vector, name='api_get_user_vector'),
     path('api/write_log/', views.api_write_log, name='api_write_log'),
     path('api/mark_recent_activity_seen/', views.api_mark_recent_activity_seen, name='api_mark_recent_activity_seen'),
     path('api/mark_security_alerts_seen/', views.api_mark_security_alerts_seen, name='api_mark_security_alerts_seen'),
@@ -52,6 +52,9 @@ urlpatterns = [
     path('api/usage_history/', views.api_usage_history, name='api_usage_history'),
     path('api/get_lockers_by_board/', views.api_get_lockers_by_board, name='api_get_lockers_by_board'),
     path('api/all_log/', views.api_all_log, name='api_all_log'),
+    path('api/recent_activities/', views.api_recent_activities, name='api_recent_activities'),
+    path('api/security_alerts/', views.api_security_alerts, name='api_security_alerts'),
+    path('api/dashboard_stats/', views.api_dashboard_stats, name='api_dashboard_stats'),
     path('api/users/<int:user_id>/lockers/', views.api_user_lockers_json, name='api_user_lockers_json'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

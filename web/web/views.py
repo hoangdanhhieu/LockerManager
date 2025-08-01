@@ -21,7 +21,7 @@ from django.shortcuts import get_object_or_404
 import os
 @login_required
 def home_dashboard(request):
-    green_activities = [1, 5, 7, 10]
+    '''
     recent_activities = (
         Log.objects.select_related("user")
         .filter(code__in=[0, 1, 2, 3, 5, 6, 7, 10, 11], mark = False)
@@ -53,9 +53,9 @@ def home_dashboard(request):
         "security_alerts_count": len(security_alerts_with_lockinfo),
         "green_activities":   green_activities,
         
-    }
+    }'''
 
-    return render(request, 'accounts/home.html', context)
+    return render(request, 'accounts/home.html')
 
 # Add other placeholder views as needed
 @login_required
@@ -280,7 +280,7 @@ def api_get_user_image(request):
             return JsonResponse({'error': 'Invalid data'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-
+'''
 @csrf_exempt
 def api_update_user_vector(request):
     if request.method == 'POST':
@@ -321,6 +321,7 @@ def api_get_user_vector(request):
         return JsonResponse({'success': True, 'vector_id': user.vector_id})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+'''
 
 @csrf_exempt
 def api_write_log(request):
@@ -357,7 +358,7 @@ def api_write_log(request):
 @login_required
 def api_mark_recent_activity_seen(request):
     try:
-        updated = Log.objects.filter(code__in = [0, 1, 2, 3, 5, 6], mark = False).update(mark = True)
+        updated = Log.objects.filter(code__in = [0, 1, 2, 3, 5, 6, 7, 10, 11], mark = False).update(mark = True)
         return JsonResponse({'success': True, 'updated': updated})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
@@ -369,6 +370,53 @@ def api_mark_security_alerts_seen(request):
         return JsonResponse({'success': True, 'updated': updated})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+@login_required
+def api_recent_activities(request):
+    green_activities = [1, 5, 7, 10]
+    recent_activities = (
+        Log.objects.select_related("user")
+        .filter(code__in=[0, 1, 2, 3, 5, 6, 7, 10, 11], mark = False)
+        .order_by("-at_time")
+    )
+    data = [{
+        "id": activity.id,
+        "details": activity.details,
+        "at_time": activity.at_time.strftime('%Y-%m-%d %H:%M'),
+        "type": 1 if(activity.code in green_activities) else 0
+    } for activity in recent_activities]
+    return JsonResponse({'recent_activities': data})
+
+@login_required
+def api_security_alerts(request):
+    security_alerts_qs = (
+        Log.objects.filter(code__in=[4], mark=False)
+        .select_related("locker")
+        .order_by("-at_time")
+    )
+    security_alerts_with_lockinfo = []
+    for alert in security_alerts_qs:
+        security_alerts_with_lockinfo.append({
+            "id": alert.id,
+            "details": alert.details,
+            "at_time": alert.at_time.strftime('%Y-%m-%d %H:%M'),
+            "board_id": alert.locker.board_id if alert.locker else None,
+            "lock_id": alert.locker.lock_id if alert.locker else None,
+        })
+    return JsonResponse({'security_alerts': security_alerts_with_lockinfo})
+
+@login_required
+def api_dashboard_stats(request):
+    total_lockers = Lock.objects.filter(user__isnull=False).count()
+    registered_users = User.objects.count()
+    todays_usage = analytics.get_today_usage()
+    security_alerts_count = Log.objects.filter(code__in=[4], mark=False).count()
+    return JsonResponse({
+        'total_lockers': total_lockers,
+        'registered_users': registered_users,
+        'todays_usage': todays_usage,
+        'security_alerts_count': security_alerts_count
+    })
 
 
 @csrf_exempt
