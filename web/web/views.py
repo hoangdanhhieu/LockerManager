@@ -21,13 +21,12 @@ from django.shortcuts import get_object_or_404
 import os
 @login_required
 def home_dashboard(request):
-    green_activities = [1, 7, 10]
+    green_activities = [1, 5, 7, 10]
     recent_activities = (
         Log.objects.select_related("user")
         .filter(code__in=[0, 1, 2, 3, 5, 6, 7, 10, 11], mark = False)
         .order_by("-at_time")
     )
-    print(recent_activities)
     security_alerts_qs = (
         Log.objects.filter(code__in = [4], mark = False)
         .select_related("locker")
@@ -155,7 +154,6 @@ def api_user_register(request):
             if User.objects.filter(id = id).exists():
                 user = User.objects.get(id = id)
                 user.name = name
-                user.status = status
                 user.save()
                 function.write_log(7, user_id = id)
             else:
@@ -176,6 +174,7 @@ def api_user_register(request):
             img = Image.objects.create(title=f"image_user_{id}", image = image_file)
             UserImage.objects.update_or_create(user = user, defaults = {'image': img})
             # Process lockers
+            Lock.objects.filter(user=user).update(user=None)
             for locker in lock:
                 board_id = int(locker['khu'])
                 lock_id = int(locker['cabinetId'].split(' ')[-1])
@@ -330,15 +329,15 @@ def api_write_log(request):
             passwd_lock_admin = request.POST.get("passwd_lock_admin")
             code = int(request.POST.get("code"))
             details = request.POST.get("details", "")
-            locker_id = request.POST.get("locker_id", None)
-            board_id = request.POST.get("board_id", None)
+            locker_id = int(request.POST.get("locker_id", 0))
+            board_id = int(request.POST.get("board_id", 0))
             if not passwd_lock_admin or code is None:
                 return JsonResponse({'error': 'Missing required fields'}, status = 400)
             admin = AdminLock.objects.first()
             if not admin or not check_password(passwd_lock_admin, admin.password):
                 return JsonResponse({'error': 'Invalid admin password'}, status = 403)
             locker = None
-            if(locker_id != None and board_id != None):
+            if(locker_id != 0 or board_id != 0):
                 locker = Lock.objects.filter(lock_id = int(locker_id), board_id=int(board_id)).first()
                 if not locker:
                     return JsonResponse({'error': 'Locker not found'}, status = 404)
@@ -346,10 +345,11 @@ def api_write_log(request):
                 board_id = int(board_id)
             if(locker and not locker.user):
                 return JsonResponse({'error': 'User not found'}, status = 404)
-            user_id = int(locker.user.id)
+            user_id = int(locker.user.id) if(locker) else 0
             code = int(code)
             return function.write_log(code, details, locker, user_id)
         except Exception as e:
+            print(e)
             return JsonResponse({'error': f'Failed to write log: {str(e)}'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -461,7 +461,7 @@ def api_usage_history(request):
         locker_id = request.GET.get('locker_id')
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
-        logs = Log.objects.select_related("locker", "locker__user").filter(code__in=[1, 3, 4])
+        logs = Log.objects.select_related("locker", "locker__user").filter(code__in=[1, 3, 4, 11])
         # Áp dụng bộ lọc nếu có
         if user_id != ''and user_id:
             logs = logs.filter(Q(locker__user__name__icontains = user_id) | Q(locker__user__sdt = user_id))
