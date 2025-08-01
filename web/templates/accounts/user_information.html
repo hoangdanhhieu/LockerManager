@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html' %}
 {% block title %}Dashboard - FaceID Locker{% endblock %}
 
-{% block page_title %}User Information{% endblock %}
+{% block page_title %}Thông tin người dùng {% endblock %}
 {% block content %}
 
 <!DOCTYPE html>
@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Information - FaceID Locker Management System</title>
+    <title>Thông tin người dùng  - FaceID Locker Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -92,13 +92,13 @@
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <input type="text" id="searchUser" placeholder="Search users..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="searchUser" placeholder="Tìm kiếm người dùng" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <option value="all">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="active">Kích hoạt</option>
+                                <option value="inactive">Chặn</option>
                             </select>
                         </div>
                     </div>
@@ -110,12 +110,12 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Access</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngươi dùng</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian đăng ký</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lần truy cập cuối</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -135,19 +135,19 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.last_access|date:"Y-m-d H:i" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {% if user.status %}
-                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Kích hoạt</span>
                                         {% else %}
-                                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Inactive</span>
+                                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Chặn</span>
                                         {% endif %}
                                         
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <div class="flex space-x-2">
-                                            <button onclick="editUser({{ user.id }})" class="text-green-600 hover:text-green-900">Edit</button>
+                                            <button onclick="editUser({{ user.id }})" class="text-green-600 hover:text-green-900">Sửa</button>
                                             {% if user.status %}
-                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-red-600 hover:text-red-900">Suspend</button>
+                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-red-600 hover:text-red-900">Chặn</button>
                                             {% else %}
-                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-blue-600 hover:text-blue-900">Activate</button>
+                                                <button onclick="toggleUserStatus({{ user.id }})" class="text-blue-600 hover:text-blue-900">Kích hoạt</button>
                                             {% endif %}
                                             <button 
                                                 type="button"
