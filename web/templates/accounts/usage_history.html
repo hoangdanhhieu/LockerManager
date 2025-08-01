@@ -179,7 +179,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.board}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.locker}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="${log.action === 'Access' ? 'bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full' : 'bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full'}">${log.action}</span>
+                                            <span class="${log.action === 'Access' ? 'bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full' : 'bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full'}">${log.action === 'Access' ? "Chấp nhận" : "Từ chối"}</span>
                                     </td>
                                 </tr>`;
                             });

@@ -108,7 +108,6 @@ int main(void) {
 			GPIO_PIN_SET);
 	readAddress();
 	HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buff, 30);
-	uint8_t last_enALL = 1;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */

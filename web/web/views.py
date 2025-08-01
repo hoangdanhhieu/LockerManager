@@ -578,10 +578,10 @@ def api_all_log(request):
                 'id': log.id,
                 'details': log.details,
                 'date_time': log.at_time.strftime('%Y-%m-%d %H:%M'),
-                'user': f'#{log.user.id} {log.user.name}' if log.user and log.user else '',
+                'user': f'#{log.user.id} {log.user.name}' if log.user else '',
                 'board': f'#{log.locker.board_id:02d}' if log.locker else '',
                 'locker': f'#{log.locker.lock_id:02d}' if log.locker else '',
-                'sdt': log.user.sdt,
+                'sdt': log.user.sdt if log.user else '',
             })
         return JsonResponse({
             'success': True,
