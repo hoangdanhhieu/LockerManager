@@ -196,7 +196,6 @@ def api_edit_user(request):
         user_id = int(data.get('id'))
         name = data.get('name')
         sdt = data.get('sdt')
-        status = int(data.get('status'))
 
         # Check if sdt exists for another user
         if User.objects.filter(sdt = sdt).exclude(id = user_id).exists():
@@ -204,7 +203,6 @@ def api_edit_user(request):
         user = User.objects.get(id=user_id)
         user.name = name
         user.sdt = sdt
-        user.status = status
         user.save()
         function.write_log(7, user_id = user_id)
         return JsonResponse({'success': True})

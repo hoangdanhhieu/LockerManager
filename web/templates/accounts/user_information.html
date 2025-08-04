@@ -194,14 +194,6 @@
                     <input type="text" id="sdt" name = "sdt" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                 </div>
                 
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Status</label>
-                    <select id="userStatus" name = "status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
-                </div>
-                
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeUserModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                         Cancel
@@ -250,7 +242,6 @@
             document.getElementById('userId').value = userId;
             document.getElementById('name').value = row.querySelector('td:nth-child(1) .text-sm.font-medium').textContent.trim();
             document.getElementById('sdt').value = row.querySelector('td:nth-child(1) .text-sm.text-gray-500').textContent.trim();
-            document.getElementById('userStatus').value = row.querySelector('td:nth-child(5) span').textContent.trim() === 'Active' ? '1' : '0';
             document.getElementById('userModal').classList.remove('hidden');
             const modalContent = document.getElementById('userModalContent');
             modalContent.classList.remove('modal-animate'); // reset
@@ -270,7 +261,6 @@
             const userId = document.getElementById('userId').value;
             const name = document.getElementById('name').value;
             const phone = document.getElementById('sdt').value;
-            const status = document.getElementById('userStatus').value;
         
             const nameResult = validateName(name);
             const phoneResult = validatePhone(phone);
@@ -278,7 +268,7 @@
             if (nameResult.isValid && phoneResult.isValid) {
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 const url = '/api/edit_user/';
-                const payload = JSON.stringify({ id: userId, name: name, sdt: phone, status: status });
+                const payload = JSON.stringify({ id: userId, name: name, sdt: phone});
             
                 fetch(url, {
                     method: 'POST',
