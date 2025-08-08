@@ -19,6 +19,9 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 import os
+
+
+os.environ["TZ"] = "Asia/Ho_Chi_Minh"
 @login_required
 def home_dashboard(request):
     '''
@@ -34,7 +37,7 @@ def home_dashboard(request):
     )
 
     security_alerts_with_lockinfo = []
-    
+
     for alert in security_alerts_qs:
         security_alerts_with_lockinfo.append({
             "id": alert.id,
@@ -43,7 +46,7 @@ def home_dashboard(request):
             "board_id": alert.locker.board_id if alert.locker else None,
             "lock_id": alert.locker.lock_id if alert.locker else None,
         })
-        
+
     context = {
         "total_lockers":      Lock.objects.filter(user__isnull = False).count(),
         "registered_users":   User.objects.count(),
@@ -52,7 +55,7 @@ def home_dashboard(request):
         "security_alerts":    security_alerts_with_lockinfo,
         "security_alerts_count": len(security_alerts_with_lockinfo),
         "green_activities":   green_activities,
-        
+
     }'''
 
     return render(request, 'accounts/home.html')
@@ -250,7 +253,7 @@ def api_check_passwd_lock_admin(request):
         else:
             return JsonResponse({'success': False, 'error': 'Invalid password'})
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)    
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def api_get_user_image(request):
@@ -368,7 +371,7 @@ def api_mark_security_alerts_seen(request):
         return JsonResponse({'success': True, 'updated': updated})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
+
 @login_required
 def api_recent_activities(request):
     green_activities = [1, 5, 7, 10]
@@ -380,7 +383,7 @@ def api_recent_activities(request):
     data = [{
         "id": activity.id,
         "details": activity.details,
-        "at_time": activity.at_time.strftime('%Y-%m-%d %H:%M'),
+        "at_time": activity.at_time,
         "type": 1 if(activity.code in green_activities) else 0
     } for activity in recent_activities]
     return JsonResponse({'recent_activities': data})
@@ -397,7 +400,7 @@ def api_security_alerts(request):
         security_alerts_with_lockinfo.append({
             "id": alert.id,
             "details": alert.details,
-            "at_time": alert.at_time.strftime('%Y-%m-%d %H:%M'),
+            "at_time": alert.at_time,
             "board_id": alert.locker.board_id if alert.locker else None,
             "lock_id": alert.locker.lock_id if alert.locker else None,
         })
@@ -527,11 +530,12 @@ def api_usage_history(request):
         data = []
         for log in page_obj:
             data.append({
-                'date_time': log.at_time.strftime('%Y-%m-%d %H:%M'),
+                'date_time': log.at_time,
                 'user': f'User #{log.locker.user.id} {log.locker.user.name}' if log.locker and log.locker.user else '',
                 'board': f'#{log.locker.board_id:02d}' if log.locker else '',
                 'locker': f'#{log.locker.lock_id:03d}' if log.locker else '',
-                'action': 'Access' if log.code == 1 else 'Failed Access'
+                'action': 'Access' if log.code == 1 else 'Failed Access',
+                'sdt': log.user.sdt if log.user else '',
             })
         return JsonResponse({
             'success': True,
@@ -575,7 +579,7 @@ def api_all_log(request):
             data.append({
                 'id': log.id,
                 'details': log.details,
-                'date_time': log.at_time.strftime('%Y-%m-%d %H:%M'),
+                'date_time': log.at_time,
                 'user': f'#{log.user.id} {log.user.name}' if log.user else '',
                 'board': f'#{log.locker.board_id:02d}' if log.locker else '',
                 'locker': f'#{log.locker.lock_id:02d}' if log.locker else '',

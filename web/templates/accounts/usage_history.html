@@ -47,7 +47,7 @@
                         <label class="block text-gray-700 text-sm font-medium mb-2" >Từ ngày</label>
                         <input type="date" id="startDate" name="startDate"  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <div>           
+                        <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">Đến ngày</label>
                         <input type="date" id="endDate" name="endDate"  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
@@ -101,9 +101,9 @@
                             </tbody>
                         </table>
                     </div>
-                    
-                
-                    <!-- Pagination 
+
+
+                    <!-- Pagination
                     <div class="flex items-center justify-between mt-6">
                         <div class="text-sm text-gray-700">
                             Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">247</span> results
@@ -158,16 +158,27 @@
                 if(locker_id) params.append('locker_id', locker_id);
                 if(startDate) params.append('start_date', startDate);
                 if(endDate) params.append('end_date', endDate);
-
+                const options = {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: false,
+                  timeZone: 'Asia/Ho_Chi_Minh'
+                };
                 fetch(`/api/usage_history/?${params.toString()}`)
                     .then(resp => resp.json())
                     .then(data => {
                         if (data.success) {
                             let tbody = '';
                             data.logs.forEach(log => {
+                                const date = new Date(log.date_time);
+                                const formatted = date.toLocaleString('en-GB', options).replace(',', '');
                                 tbody += `
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.date_time}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatted}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
@@ -190,13 +201,13 @@
                         }
                     });
             }
-        
+
             // Filter submit
             document.getElementById('filter-form').addEventListener('submit', function(e){
                 e.preventDefault();
                 loadUsageHistory(1);
             });
-        
+
             // Pagination buttons
             document.getElementById('prev-page').addEventListener('click', function(){
                 if(currentPage > 1) loadUsageHistory(currentPage - 1);
@@ -205,7 +216,7 @@
                 const total = parseInt(document.getElementById('total-pages').textContent);
                 if(currentPage < total) loadUsageHistory(currentPage + 1);
             });
-        
+
             loadUsageHistory();
         });
 

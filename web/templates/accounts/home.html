@@ -59,21 +59,21 @@
         }
 
         .security-alerts-wrapper {
-            max-height: 300px; 
+            max-height: 300px;
             overflow-y: auto;
             }
-        
+
         .security-alerts-wrapper table {
             width: 100%;
             border-collapse: collapse;
             }
-        
+
         .security-alerts-wrapper th,
             .security-alerts-wrapper td {
             padding: 8px 12px;
             border-bottom: 1px solid #f3f3f3;
         }
-        
+
         .security-alerts-wrapper thead th {
             position: sticky;
             top: 0;
@@ -145,7 +145,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-gray-500 text-sm">Hoạt động hôm nay</p>
-                                <h3 class="text-2xl font-bold" id="todays-usage">--</h3> 
+                                <h3 class="text-2xl font-bold" id="todays-usage">--</h3>
                             </div>
                             <div class="bg-yellow-100 p-3 rounded-full">
                                 <i class="fas fa-history text-yellow-500"></i>
@@ -234,6 +234,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const options = {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Ho_Chi_Minh'
+        };
         // Recent Activity
         let old_activities = [];
         function updateRecentActivities() {
@@ -243,7 +253,9 @@
                     let html = '';
                     if (data.recent_activities && data.recent_activities.length) {
                         data.recent_activities.forEach(item => {
-                            html += 
+                            const date = new Date(item.at_time);
+                            const formatted = date.toLocaleString('en-GB', options).replace(',', '');
+                            html +=
                             `
                             <div class="flex items-start activity-item ${!old_activities.includes(item.id) ? "animated-row" : ""}">
                                 <div class="p-2 rounded-full mr-3
@@ -252,7 +264,7 @@
                                 </div>
                                 <div>
                                     <p class="font-medium">${item.details}</p>
-                                    <p class="text-sm text-gray-500">${item.at_time}</p>
+                                    <p class="text-sm text-gray-500">${formatted}</p>
                                 </div>
                             </div>
                             `;
@@ -283,9 +295,11 @@
                     let html = "";
                     if (data.security_alerts && data.security_alerts.length) {
                         data.security_alerts.forEach(item => {
+                            const date = new Date(item.at_time);
+                            const formatted = date.toLocaleString('en-GB', options).replace(',', '');
                             html += `
                                 <tr class="${!old_alert.includes(item.id) ? "animated-row-red" : ""}">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.at_time}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatted}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.board_id !== null ? item.board_id : ''}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.lock_id !== null ? item.lock_id : ''}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">${item.details}</td>
