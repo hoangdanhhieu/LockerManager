@@ -60,7 +60,7 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 uint8_t ADDRESS = 0x40;
 uint32_t BAUD_RATE = 9600;
-uint8_t UNLOCK_TIME = 20; //10ms step
+uint8_t UNLOCK_TIME = 100; //10ms step
 uint8_t func_code = 0;
 uint8_t tx_buff[30];
 uint8_t rx_buff[30];
@@ -97,15 +97,6 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_USART1_UART_Init();
 	/* USER CODE BEGIN 2 */
-	HAL_GPIO_WritePin(GPIOA, L8_Pin | L7_Pin | L6_Pin | L10_Pin, GPIO_PIN_SET);
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOC, L5_Pin | L9_Pin | L11_Pin | L12_Pin, GPIO_PIN_SET);
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOB,
-	L4_Pin | L3_Pin | L2_Pin | L1_Pin | L13_Pin | L14_Pin | L15_Pin | L16_Pin,
-			GPIO_PIN_SET);
 	readAddress();
 	HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buff, 30);
 	/* USER CODE END 2 */
@@ -156,7 +147,9 @@ int main(void) {
 			last_en_button = curr_en_button;
 			continue;
 		}
-		memset(rx_buff, 0, sizeof(rx_buff));
+		if(func_code != 0){
+			memset(rx_buff, 0, sizeof(rx_buff));
+		}
 		func_code = 0;
 		/* USER CODE END WHILE */
 
@@ -249,17 +242,19 @@ static void MX_GPIO_Init(void) {
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOA, L8_Pin | L7_Pin | L6_Pin | REDE_Pin | L10_Pin,
-			GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, REDE_Pin, GPIO_PIN_RESET);
+
+	HAL_GPIO_WritePin(GPIOA, L8_Pin | L7_Pin | L6_Pin | L10_Pin,
+			GPIO_PIN_SET);
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOC, L5_Pin | L9_Pin | L11_Pin | L12_Pin,
-			GPIO_PIN_RESET);
+			GPIO_PIN_SET);
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB,
 			L4_Pin | L3_Pin | L2_Pin | L1_Pin | L13_Pin | L14_Pin | L15_Pin
-					| L16_Pin, GPIO_PIN_RESET);
+					| L16_Pin, GPIO_PIN_SET);
 
 	/*Configure GPIO pins : EN_ALL_Pin D1_Pin D2_Pin D3_Pin
 	 F5_Pin F9_Pin F12_Pin */
@@ -279,15 +274,21 @@ static void MX_GPIO_Init(void) {
 
 	/*Configure GPIO pins : L8_Pin L7_Pin L6_Pin REDE_Pin
 	 L10_Pin */
-	GPIO_InitStruct.Pin = L8_Pin | L7_Pin | L6_Pin | REDE_Pin | L10_Pin;
+	GPIO_InitStruct.Pin = REDE_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = L8_Pin | L7_Pin | L6_Pin | L10_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	/*Configure GPIO pins : L5_Pin L9_Pin L11_Pin L12_Pin */
 	GPIO_InitStruct.Pin = L5_Pin | L9_Pin | L11_Pin | L12_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -304,7 +305,7 @@ static void MX_GPIO_Init(void) {
 	 L13_Pin L14_Pin L15_Pin L16_Pin */
 	GPIO_InitStruct.Pin = L4_Pin | L3_Pin | L2_Pin | L1_Pin | L13_Pin | L14_Pin
 			| L15_Pin | L16_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
