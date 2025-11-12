@@ -151,19 +151,19 @@ void unlock_func() {
 	tx_buff[3] = UNLOCK_CODE;
 	tx_buff[4] = 0x02;
 	tx_buff[5] = rx_buff[5];
-	tx_buff[6] = 0x01;
-	tx_buff[7] = checksum(tx_buff, 7);
-	if (rx_buff[5] == 0) {
-		for (uint8_t i = 1; i <= MAX_CHANNEL; i++) {
-			writePin(i, 1);
-			HAL_Delay((uint32_t) UNLOCK_TIME * 10);
-			writePin(i, 0);
+	tx_buff[6] = 0x00;
+	uint8_t count = 0;
+	writePin(rx_buff[5], 1);
+	while(count <= UNLOCK_TIME){
+		if(readPin(rx_buff[5])){
+			tx_buff[6] = 0x01;
+			break;
 		}
-	} else {
-		writePin(rx_buff[5], 1);
-		HAL_Delay((uint32_t) UNLOCK_TIME * 10);
-		writePin(rx_buff[5], 0);
+		count+=1;
+		HAL_Delay(10);
 	}
+	writePin(rx_buff[5], 0);
+	tx_buff[7] = checksum(tx_buff, 7);
 	send_data(tx_buff, 8);
 }
 
@@ -252,9 +252,17 @@ void rusc3_func() {
 }
 
 void unlock_all() {
-	for (int i = 1; i <= MAX_CHANNEL; i++) {
+	uint8_t count = 0;
+	for (uint8_t i = 1; i <= MAX_CHANNEL; i++) {
 		writePin(i, 1);
-		HAL_Delay((uint32_t) UNLOCK_TIME * 10);
+		count = 0;
+		while(count <= UNLOCK_TIME){
+			if(readPin(i)){
+				break;
+			}
+			count+=1;
+			HAL_Delay(10);
+		}
 		writePin(i, 0);
 	}
 }
